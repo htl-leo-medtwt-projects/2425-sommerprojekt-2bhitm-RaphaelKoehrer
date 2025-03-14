@@ -1,10 +1,64 @@
+@font-face {
+    font-family: 'custom';
+    src: url(./fonts/LifeCraft_Font.ttf);
+}
+
 body {
     width: 100vw;
     height: 100vh;
     margin: 0;
     background-image: url(./img/background.jpg);
     background-size: cover;
+    cursor: url('./img/cursor.png'), auto;
+    font-family: 'custom';
 }
 
+#ButtonWrapper {
+    width: 600px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    color: white;
+}
+
+#ButtonWrapper p {
+   display: block;
+   margin: 0 auto;
+   text-align: center;
+   color: #E7E24B;
+   letter-spacing: 4px;
+   text-shadow: 
+                2px 2px 0 #000000,
+                4px 4px 0 #000000,
+                6px 6px 0 #000000,
+                8px 8px 0 #000000;
+}
+
+#ButtonWrapper p::first-letter {
+    color: white;
+}
+
+p:hover,
+p:hover::first-letter {
+    color: white;
+}
+
+#tut p {
+    position: relative;
+    top: -14vh;
+    font-size: 4rem;
+}
+
+.btn {
+    width: 500px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    margin: 40px 0;
+    border-radius: 8px;
+}
 
 
