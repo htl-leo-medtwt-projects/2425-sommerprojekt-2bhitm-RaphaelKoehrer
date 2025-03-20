@@ -3,6 +3,10 @@
     src: url(./fonts/LifeCraft_Font.ttf);
 }
 
+:root{
+    --circle-size: 85px;
+}
+
 body {
     width: 100vw;
     height: 100vh;
@@ -26,6 +30,7 @@ body {
 
 #ButtonWrapper p {
    display: block;
+   width: fit-content;
    margin: 0 auto;
    text-align: center;
    color: #E7E24B;
@@ -41,15 +46,21 @@ body {
     color: white;
 }
 
-p:hover,
-p:hover::first-letter {
+#tutText:hover, #startText:hover {
     color: white;
 }
+
 
 #tut p {
     position: relative;
     top: -14vh;
     font-size: 4rem;
+}
+
+#start p {
+    position: relative;
+    top: -16vh;
+    font-size: 5.5rem;
 }
 
 .btn {
@@ -59,6 +70,24 @@ p:hover::first-letter {
     margin: 0 auto;
     margin: 40px 0;
     border-radius: 8px;
+}
+
+#settingsBtn img, #leaderboardBtn img{
+    width: var(--circle-size);
+    height: var(--circle-size);
+    border-radius: 50%;
+}
+
+#settingsBtn {
+    position: fixed;
+    top: 87.5%;
+    left: 2.5%;
+}
+
+#leaderboardBtn {
+    position: fixed;
+    top: 87.5%;
+    right: 2.5%;
 }
 
 

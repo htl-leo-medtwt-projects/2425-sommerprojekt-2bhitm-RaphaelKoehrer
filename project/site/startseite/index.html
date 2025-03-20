@@ -5,17 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="./style.css">
+    <script src="./script.js" defer></script>
 </head>
 <body>
     <div id="ButtonWrapper">
-        <div id="tut">
+        <div id="tut" onclick="showTut()">
             <img src="./img/button_middle.png" alt="btn1" class="btn">
-            <p>Tutorial</p>
+            <p id="tutText">Tutorial</p>
         </div>
         <div id="start">
-            	<img src="./img/button_large.png" alt="btn2" class="btn">
-                <p>Start</p>
+            	<img src="./img/button_large.png" alt="btn2" class="btn" onclick="visitNextSite()">
+                <p id="startText" onclick="visitNextSite()">Start</p>
         </div>
+    </div>
+
+    <div id="settingsBtn">
+        <img src="./img/button.png" alt="btn">
+    </div>
+
+    <div id="leaderboardBtn">
+        <img src="./img/button.png" alt="btn">
     </div>
     
     
