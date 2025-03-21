@@ -5,6 +5,7 @@
 
 :root{
     --circle-size: 85px;
+    --red-color: #5d0404;
 }
 
 body {
@@ -90,4 +91,20 @@ body {
     right: 2.5%;
 }
 
+#tutorial {
+    position: fixed;
+    width: 60vw;
+    height: 70vh;
+    top: 15%;
+    left: 20%;
+    border-radius: 40px;
+    background-image: url(./img/TutorialBackground.png);
+    background-size: cover;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+}
 
+#tutorial img {
+    width: 40%;
+}
