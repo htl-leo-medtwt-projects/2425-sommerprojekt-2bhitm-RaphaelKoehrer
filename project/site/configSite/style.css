@@ -19,7 +19,7 @@ body {
 }
 
 #ButtonWrapper {
-    width: 600px;
+    width: 520px;
     height: 100vh;
     display: flex;
     flex-direction: column;
@@ -28,6 +28,11 @@ body {
     margin: 0 auto;
     color: white;
 }
+
+#ButtonWrapper div {
+    margin: 40px 0;
+}
+
 
 #ButtonWrapper p {
    display: block;
@@ -41,81 +46,36 @@ body {
                 4px 4px 0 #000000,
                 6px 6px 0 #000000,
                 8px 8px 0 #000000;
+    position: relative;
+    top: -50px;
+    font-size: 2rem;
 }
 
 #ButtonWrapper p::first-letter {
     color: white;
 }
 
-#tutText:hover, #startText:hover {
+#ButtonWrapper p:hover {
     color: white;
 }
 
 
-#tut p {
-    position: relative;
-    top: -14vh;
-    font-size: 4rem;
+#ButtonWrapper img {
+    width: 100%;
 }
 
-#start p {
-    position: relative;
-    top: -16vh;
-    font-size: 5.5rem;
+#username p{
+    top: -20px;
 }
 
-.btn {
-    width: 500px;
-    height: auto;
-    display: block;
-    margin: 0 auto;
-    margin: 40px 0;
-    border-radius: 8px;
+#done p {
+    top: 50px;
 }
 
-#settingsBtn img, #leaderboardBtn img{
-    width: var(--circle-size);
-    height: var(--circle-size);
-    border-radius: 50%;
-}
 
-#settingsBtn {
-    position: fixed;
-    top: 87.5%;
-    left: 2.5%;
-}
 
-#leaderboardBtn {
-    position: fixed;
-    top: 87.5%;
-    right: 2.5%;
-}
 
-#tutorial {
-    position: fixed;
-    width: 60vw;
-    height: 70vh;
-    top: 15%;
-    left: 20%;
-    border-radius: 40px;
-    background-image: url(./img/TutorialBackground.png);
-    background-size: cover;
-    display: none;
-    flex-direction: column;
-    justify-content: center;
-}
 
-#tutorial img {
-    width: 40%;  
-    position: absolute;
-    left: 30%;
-    top: 0%;
 
-}
 
-#tutorial p {
-    text-align: center;
-    font-size: 2.5rem;
-    transform: translateY(-15vh);
-}
 
