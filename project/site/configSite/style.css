@@ -34,30 +34,15 @@ body {
 }
 
 
-#ButtonWrapper p {
-   display: block;
-   width: fit-content;
-   margin: 0 auto;
-   text-align: center;
-   color: #E7E24B;
-   letter-spacing: 4px;
-   text-shadow: 
-                2px 2px 0 #000000,
-                4px 4px 0 #000000,
-                6px 6px 0 #000000,
-                8px 8px 0 #000000;
-    position: relative;
-    top: -50px;
-    font-size: 2rem;
-}
-
-#ButtonWrapper p::first-letter {
-    color: white;
-}
-
 #ButtonWrapper p:hover {
     color: white;
 }
+
+
+#ButtonWrapper p:hover::first-letter {
+    color: white;
+}
+
 
 
 #ButtonWrapper img {
@@ -65,17 +50,99 @@ body {
 }
 
 #username p{
+    position: relative;
     top: -20px;
 }
 
 #done p {
+    position: relative;
     top: 50px;
+}
+
+#humanP, #orcP {
+    position: relative;
+    top: -56px;
+}
+
+#username input {
+    width: 98%;
+    height: 50%;
+    background-color: transparent;
+    position: relative;
+    top: -60%;
+    border: none;
+    font-size: 2rem;
+    color: white;
+    text-align: center;
+    font-family: 'custom';
+    letter-spacing: 2px;
+}
+
+#username input:active {
+    outline: transparent;
+    border: none;
 }
 
 
 
+.yellow {
+    display: block;
+    width: fit-content;
+    margin: 0 auto;
+    text-align: center;
+    color: #E7E24B;
+    letter-spacing: 4px;
+    font-size: 2.5rem;
+    text-shadow: 
+                 2px 2px 0 #000000,
+                 4px 4px 0 #000000,
+                 6px 6px 0 #000000,
+                 8px 8px 0 #000000;
+ }
+
+ .yellow::first-letter {
+    color: white;
+ }
 
 
+.gray {
+    display: block;
+    width: fit-content;
+    margin: 0 auto;
+    text-align: center;
+    color: gray;
+    letter-spacing: 4px;
+    font-size: 2.5rem;
+    text-shadow: 
+                 2px 2px 0 #000000,
+                 4px 4px 0 #000000,
+                 6px 6px 0 #000000,
+                 8px 8px 0 #000000;
+}
+
+.gray::first-letter {
+    color: gray;
+}
+
+.white {
+    display: block;
+    width: fit-content;
+    margin: 0 auto;
+    text-align: center;
+    color: white;
+    letter-spacing: 4px;
+    font-size: 2.5rem;
+
+    text-shadow: 
+                 2px 2px 0 #000000,
+                 4px 4px 0 #000000,
+                 6px 6px 0 #000000,
+                 8px 8px 0 #000000;
+}   
+
+.white::first-letter {
+    color: white;
+}   
 
 
 
