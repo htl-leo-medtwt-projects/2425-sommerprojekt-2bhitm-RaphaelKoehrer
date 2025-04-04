@@ -12,7 +12,7 @@ body {
     width: 100vw;
     height: 100vh;
     margin: 0;
-    background-image: url(./img/background.jpg);
+    background-image: url(./img/background.png);
     background-size: cover;
     cursor: url('./img/cursor.png'), auto;
     font-family: 'custom';
@@ -28,6 +28,8 @@ body {
     margin: 0 auto;
     color: white;
 }
+
+
 
 #ButtonWrapper p {
    display: block;

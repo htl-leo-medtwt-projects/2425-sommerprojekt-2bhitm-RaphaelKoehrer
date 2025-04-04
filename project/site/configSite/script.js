@@ -14,6 +14,8 @@ function chooseTeam(team) {
      if (team === 'human') {
           humanButton.classList.remove("yellow");
           orcButton.classList.remove("yellow");
+          document.getElementById('humanBtn').src = "./img/Button_light.png";
+          document.getElementById('orcBtn').src = "./img/Button_dark.png";
 
           humanButton.classList.remove("gray");
          humanButton.classList.add("white");
@@ -22,6 +24,8 @@ function chooseTeam(team) {
      } else if (team === 'orc') {
           humanButton.classList.remove("yellow");
           orcButton.classList.remove("yellow");
+          document.getElementById('humanBtn').src = "./img/Button_dark.png";
+          document.getElementById('orcBtn').src = "./img/Button_light.png";
 
           humanButton.classList.remove("white");
           humanButton.classList.add("gray");

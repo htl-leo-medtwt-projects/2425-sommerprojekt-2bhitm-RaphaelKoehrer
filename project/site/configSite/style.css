@@ -12,7 +12,7 @@ body {
     width: 100vw;
     height: 100vh;
     margin: 0;
-    background-image: url(./img/background.jpg);
+    background-image: url(./img/background_new.png);
     background-size: cover;
     cursor: url('./img/cursor.png'), auto;
     font-family: 'custom';
@@ -47,6 +47,10 @@ body {
 
 #ButtonWrapper img {
     width: 100%;
+    border-radius: 10px;
+    box-shadow: 0px 0px 50px rgba(0, 0, 0, 1);
+
+
 }
 
 #username p{
@@ -56,7 +60,7 @@ body {
 
 #done p {
     position: relative;
-    top: 50px;
+    top: 55px;
 }
 
 #humanP, #orcP {
@@ -78,8 +82,8 @@ body {
     letter-spacing: 2px;
 }
 
-#username input:active {
-    outline: transparent;
+#username input:focus {
+    outline: none;
     border: none;
 }
 
