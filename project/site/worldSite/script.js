@@ -6,7 +6,7 @@ function getQueryParams() {
     if (team && username) {
         console.log(`Team: ${team}, Username: ${username}`);
     } else {
-        alert("Missing team or username!");
+        alert("Username oder Team nicht gefunden!");
     }
 
     fadeInPage();
@@ -42,7 +42,7 @@ function selectSetting2(option) {
 
 function confirmSelection() {
     if (!selectedMap || !selectedResource || !selectedSetting1 || !selectedSetting2) {
-        alert("Please make all selections before proceeding!");
+        alert("Bitte wähle alles Optionen aus!");
         return;
     }
     console.log(`Map: ${selectedMap}, Resource: ${selectedResource}, Setting 1: ${selectedSetting1}, Setting 2: ${selectedSetting2}`);
@@ -57,6 +57,6 @@ function fadeInPage() {
         overlay.classList.add('hidden');
         console.log("Overlay hidden");
     } else {
-        console.error("transitionOverlay element not found");
+        console.error("Overlay nicht gefunden");
     }
 }
