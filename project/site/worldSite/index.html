@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./style.css">
+    <script src="./script.js" defer></script>
+</head>
+<body onload="fadeInPage()">
+
+    <div id="transitionOverlay"></div>
+
+<div id="ButtonWrapper">
+    <div id="chooseTeam">
+        <p class="yellow">Choose your Team</p>
+        <div onclick="chooseTeam('human')">
+            <img src="./img/button.png" alt="btn" id="humanBtn">
+            <p class="yellow" id="humanP">Human</p>
+        </div>
+        <div onclick="chooseTeam('orc')">
+            <img src="./img/button.png" alt="btn" id="orcBtn">
+            <p class="yellow" id="orcP">Orc</p>
+        </div>
+        
+    </div>
+
+    <div id="username"> 
+        <p class="yellow">Username</p>
+        <img src="./img/button_middle.png" alt="btn">
+        <input type="text" name="username" id="usernameInput" placeholder="..." required>
+    </div>
+
+    <div id="done" onclick="goToNextPage()">
+        <p class="yellow">Done</p>
+        <img src="./img/button.png" alt="btn">
+    </div>
+</div>
+   
+    
+    
+    
+</body>
+</html>

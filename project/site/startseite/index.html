@@ -7,7 +7,12 @@
     <link rel="stylesheet" href="./style.css">
     <script src="./script.js" defer></script>
 </head>
-<body>
+<body onload="fadeInPage()">
+
+    <div id="transitionOverlay"></div>
+    <div id="transitionOverlayLoad"></div>
+
+    <img src="./img/wcLogo.png" alt="logo" id="warcraft">
     <div id="ButtonWrapper">
         <div id="tut" onclick="showTut()">
             <img src="./img/button_middle.png" alt="btn1" class="btn">
@@ -21,19 +26,43 @@
 
     <div id="tutorial">
         <div>
-            <img src="./img/button.png" alt="img">
-            <p>Return</p>
+            <img src="./img/button.png" alt="img" onclick="closeTut()">
+            <p onclick="closeTut()">Return</p>
+        </div>
+        <div id="tutorialText">   
+            <p>Tutorial Text folgt..</p>
         </div>
     </div>
 
-    <div id="settingsBtn">
-        <img src="./img/button.png" alt="btn">
+    <div id="settingsDiv" onclick="showSettings()">
+        <img src="./img/settings.png" alt="settings">
     </div>
 
-    <div id="leaderboardBtn">
-        <img src="./img/button.png" alt="btn">
+    <div id="leaderBoardDiv" onclick="showLeaderboard()">
+        <img src="./img/leaderboard.png" alt="leaderboard">
+    </div>
+
+    <div id="leaderboard">
+        <div>
+            <img src="./img/button.png" alt="img" onclick="closeLeaderboard()">
+            <p onclick="closeLeaderboard()">Return</p>
+        </div>
+        <div id="leaderboardContent">
+            <p>Leaderboard folgt...</p>
+        </div>
     </div>
     
+    <div id="settings">
+        <div>
+            <img src="./img/button.png" alt="img" onclick="closeSettings()">
+            <p onclick="closeSettings()">Return</p>
+        </div>
+        <div id="settingsContent">
+            <p>Einstellungen folgen...</p>
+        </div>
+    </div>
+
+
     
     
 </body>

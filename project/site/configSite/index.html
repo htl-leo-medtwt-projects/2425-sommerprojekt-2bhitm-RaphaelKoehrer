@@ -7,8 +7,10 @@
     <link rel="stylesheet" href="./style.css">
     <script src="./script.js" defer></script>
 </head>
-<body>
+<body onload="fadeInPage()">
 
+    <div id="transitionOverlay"></div>
+    <div id="transitionOverlayNext"></div>
 
 <div id="ButtonWrapper">
     <div id="chooseTeam">
@@ -30,7 +32,7 @@
         <input type="text" name="username" id="usernameInput" placeholder="..." required>
     </div>
 
-    <div id="done">
+    <div id="done" onclick="goToNextPage()">
         <p class="yellow">Done</p>
         <img src="./img/button.png" alt="btn">
     </div>
