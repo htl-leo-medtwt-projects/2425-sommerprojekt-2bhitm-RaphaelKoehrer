@@ -49,7 +49,7 @@ function chooseTeam(team) {
     overlay.classList.add('active');
 
     setTimeout(() => {
-        window.location.href = `../nextPage/index.html?team=${team}&username=${encodeURIComponent(username)}`;
+        window.location.href = `../worldSite/index.html?team=${team}&username=${encodeURIComponent(username)}`;
     }, 500); 
 }
 
