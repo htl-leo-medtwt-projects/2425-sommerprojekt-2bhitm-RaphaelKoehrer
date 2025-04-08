@@ -1,0 +1,93 @@
+@font-face {
+    font-family: 'custom';
+    src: url(./fonts/LifeCraft_Font.ttf);
+}
+
+
+body {
+    margin: 0;
+    padding: 0;
+    background-image: url('./img/TutorialBackground.png'); 
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top;
+    font-family: 'custom';
+}
+
+:root{
+    --circle-size: 85px;
+    --red-color: #5d0404;
+    --yellow-color: #E7E24B;
+}
+
+#gameWrapper {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+}
+
+
+#mapPlaceholder {
+    width: 85vh;
+    height: 85vh;
+    background-color: black;
+    border: 3px solid black;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+}
+
+
+#minimapSection {
+    position: absolute;
+    top: 10%;
+    left: 5%;
+    width: 35vh;
+    height: 35vh;
+    background-color: black;
+    border: 3px solid black; 
+
+}
+
+
+#menuButton {
+    position: absolute;
+    top: 2%;
+    left: 5%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    text-align: center;
+}
+
+#menuButton img {
+    width: 35.7vh; 
+    height: 6.5vh;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 1);
+    border-radius: 10px;
+}
+
+#menuButton p {
+    margin: 0;
+    font-size: 2rem;
+    letter-spacing: 3.5px;
+    color: var(--yellow-color);
+    text-shadow: 1px 1px 2px black;
+    position: absolute;
+    top: 18px;
+}
+
+#menuButton:hover p {
+    color: white;
+}
+
+#menuButton p::first-letter {
+    color: white;
+}

@@ -12,7 +12,19 @@ function getQueryParams() {
     fadeInPage();
 }
 
-window.onload = getQueryParams;
+window.onload = function () {
+    getQueryParams();
+
+    selectedResource = document.getElementById('resource').value;
+    selectedGoal = document.getElementById('goal').value;
+    selectedTimeLimit = document.getElementById('timeLimit').value;
+    selectedMission = document.getElementById('missions').value;
+
+    console.log(`Default Resource: ${selectedResource}`);
+    console.log(`Default Goal: ${selectedGoal}`);
+    console.log(`Default Time Limit: ${selectedTimeLimit}`);
+    console.log(`Default Mission: ${selectedMission}`);
+};
 
 let selectedMap = null;
 let selectedResource = null;
@@ -58,11 +70,50 @@ function selectMission(mission) {
 }
 
 function confirmSelection() {
-    if (!selectedMap || !selectedResource || !selectedGoal || !selectedTimeLimit || !selectedMission) {
-        alert("Bitte wähle alle Optionen aus!");
+    if (!selectedMap) {
+        alert("Bitte wähle eine Karte aus!");
         return;
     }
+    if (!selectedResource) {
+        alert("Bitte wähle eine Ressource aus!");
+        return;
+    }
+    if (!selectedGoal) {
+        alert("Bitte wähle ein Ziel aus!");
+        return;
+    }
+    if (!selectedTimeLimit) {
+        alert("Bitte wähle ein Zeitlimit aus!");
+        return;
+    }
+    if (!selectedMission) {
+        alert("Bitte wähle eine Mission aus!");
+        return;
+    }
+
     console.log(`Map: ${selectedMap}, Resource: ${selectedResource}, Goal: ${selectedGoal}, Time Limit: ${selectedTimeLimit}, Mission: ${selectedMission}`);
+
+
+    const overlay = document.getElementById('transitionOverlay');
+    if (overlay) {
+        overlay.classList.remove('hidden');
+        overlay.classList.add('active'); 
+
+        setTimeout(() => {
+            const params = new URLSearchParams({
+                username: new URLSearchParams(window.location.search).get('username'),
+                team: new URLSearchParams(window.location.search).get('team'),
+                map: selectedMap,
+                resource: selectedResource,
+                goal: selectedGoal,
+                timeLimit: selectedTimeLimit,
+                mission: selectedMission
+            });
+            window.location.href = `../gameSite/index.html?${params.toString()}`;
+        }, 500); 
+    } else {
+        console.error("Overlay nicht gefunden");
+    }
 }
 
 function fadeInPage() {
