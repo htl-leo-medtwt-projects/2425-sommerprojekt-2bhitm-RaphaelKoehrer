@@ -14,15 +14,27 @@ function getQueryParams() {
 
 window.onload = getQueryParams;
 
-
 let selectedMap = null;
 let selectedResource = null;
-let selectedSetting1 = null;
-let selectedSetting2 = null;
+let selectedGoal = null;
+let selectedTimeLimit = null;
+let selectedMission = null;
 
 function selectMap(map) {
     selectedMap = map;
     console.log(`Selected Map: ${map}`);
+
+    const mapCards = document.querySelectorAll('.map-card');
+
+    mapCards.forEach(card => {
+        if (card.getAttribute('onclick').includes(map)) {
+            card.classList.add('selected'); 
+            card.classList.remove('dimmed'); 
+        } else {
+            card.classList.remove('selected'); 
+            card.classList.add('dimmed'); 
+        }
+    });
 }
 
 function selectResource(resource) {
@@ -30,28 +42,31 @@ function selectResource(resource) {
     console.log(`Selected Resource: ${resource}`);
 }
 
-function selectSetting1(option) {
-    selectedSetting1 = option;
-    console.log(`Selected Setting 1: ${option}`);
+function selectGoal(goal) {
+    selectedGoal = goal;
+    console.log(`Selected Goal: ${goal}`);
 }
 
-function selectSetting2(option) {
-    selectedSetting2 = option;
-    console.log(`Selected Setting 2: ${option}`);
+function selectTimeLimit(timeLimit) {
+    selectedTimeLimit = timeLimit;
+    console.log(`Selected Time Limit: ${timeLimit}`);
+}
+
+function selectMission(mission) {
+    selectedMission = mission;
+    console.log(`Selected Mission: ${mission}`);
 }
 
 function confirmSelection() {
-    if (!selectedMap || !selectedResource || !selectedSetting1 || !selectedSetting2) {
-        alert("Bitte wähle alles Optionen aus!");
+    if (!selectedMap || !selectedResource || !selectedGoal || !selectedTimeLimit || !selectedMission) {
+        alert("Bitte wähle alle Optionen aus!");
         return;
     }
-    console.log(`Map: ${selectedMap}, Resource: ${selectedResource}, Setting 1: ${selectedSetting1}, Setting 2: ${selectedSetting2}`);
+    console.log(`Map: ${selectedMap}, Resource: ${selectedResource}, Goal: ${selectedGoal}, Time Limit: ${selectedTimeLimit}, Mission: ${selectedMission}`);
 }
 
-
-
 function fadeInPage() {
-    console.log("fadeInPage called"); 
+    console.log("fadeInPage called");
     const overlay = document.getElementById('transitionOverlay');
     if (overlay) {
         overlay.classList.add('hidden');

@@ -57,12 +57,32 @@ h1.yellow {
     flex-direction: column;
     align-items: center;
     cursor: pointer;
-    transition: transform 0.3s ease;
-    width: 30%; 
+    transition: transform 0.3s ease, filter 0.3s ease;
+    width: 30%;
 }
 
 .map-card:hover img {
-    transform: scale(1.05); 
+    transform: scale(1.05);
+}
+
+.map-card.selected {
+    transform: scale(1.15); 
+    filter: none; 
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.map-card.selected:hover img {
+    transform: none; 
+}
+
+.map-card.dimmed {
+    filter: grayscale(100%); 
+    pointer-events: auto; 
+    transition: filter 0.3s ease;
+}
+
+.map-card.dimmed:hover img {
+    transform: none; 
 }
 
 .map-img {
@@ -104,7 +124,7 @@ h1.yellow {
 }
 
 .setting-dropdown select {
-    width: 150px;
+    width: 200px; 
     padding: 5px;
     font-size: 2rem; 
     border-radius: 5px;
@@ -133,19 +153,44 @@ h1.yellow {
     align-items: center;
     gap: 10px;
     margin-top: 20px;
+    position: relative; 
+    z-index: 2; 
+    top: 80px;
+    transform: scale(1.25); 
 }
 
-#done img {
-    width: 150px;
-    cursor: pointer;
-    transition: transform 0.3s ease;
+#done p {
+    margin: 0;
+    font-size: 2.5rem; 
+    color: var(--yellow-color);
+    text-align: center;
+    position: relative;
+    top: 0; 
+    transition: color 0.3s ease;
 }
 
-#done img:hover {
-    transform: scale(1.1);
+#done:hover p {
+    color: white; 
 }
 
+#customButton {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    z-index: 1; 
+    transform: scale(1.25);
+}
 
+#customButton img {
+    width: 250px; 
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0px 0px 50px rgba(0, 0, 0, 1); 
+    transition: transform 0.3s ease, filter 0.3s ease, box-shadow 0.3s ease;
+}
+#customButton img:hover {
+    filter: grayscale(20%); 
+}
 
 #transitionOverlay {
     position: fixed;

@@ -42,17 +42,27 @@
                     </select>
                 </div>
                 <div class="setting-dropdown">
-                    <label for="setting1" class="yellow">Setting 1</label>
-                    <select id="setting1" onchange="selectSetting1(this.value)">
-                        <option value="option1">Option 1</option>
-                        <option value="option2">Option 2</option>
+                    <label for="goal" class="yellow">Goal</label>
+                    <select id="goal" onchange="selectGoal(this.value)">
+                        <option value="10_buildings">10 Buildings</option>
+                        <option value="20_buildings">20 Buildings</option>
+                        <option value="30_buildings">30 Buildings</option>
                     </select>
                 </div>
                 <div class="setting-dropdown">
-                    <label for="setting2" class="yellow">Setting 2</label>
-                    <select id="setting2" onchange="selectSetting2(this.value)">
-                        <option value="option1">Option 1</option>
-                        <option value="option2">Option 2</option>
+                    <label for="timeLimit" class="yellow">Time Limit</label>
+                    <select id="timeLimit" onchange="selectTimeLimit(this.value)">
+                        <option value="10_min">10 Minutes</option>
+                        <option value="20_min">20 Minutes</option>
+                        <option value="unlimited">Unlimited</option>
+                    </select>
+                </div>
+                <div class="setting-dropdown">
+                    <label for="missions" class="yellow">Missions</label>
+                    <select id="missions" onchange="selectMission(this.value)">
+                        <option value="none">No Mission</option>
+                        <option value="mission1">Mission 1</option>
+                        <option value="mission2">Mission 2</option>
                     </select>
                 </div>
             </div>
@@ -60,6 +70,11 @@
 
         <div id="done" onclick="confirmSelection()">
             <p class="yellow">Done</p>
+        </div>
+
+
+        <div id="customButton">
+            <img src="./img/button_middle.png" alt="Custom Button">
         </div>
     </div>
 
