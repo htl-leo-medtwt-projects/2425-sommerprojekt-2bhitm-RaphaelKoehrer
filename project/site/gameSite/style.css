@@ -21,25 +21,31 @@ body {
 }
 
 #gameWrapper {
-    width: 100vw;
-    height: 100vh;
+    width: 100vw; 
+    height: 100vh; 
     position: relative;
+    overflow: hidden; 
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 0 auto;
+    background-color: transparent;
 }
 
+#mapContainer {
+    width: 85vh; 
+    height: 85vh;
+    position: relative;
+    overflow: hidden; 
+}
 
 #mapPlaceholder {
-    width: 85vh;
-    height: 85vh;
-    background-color: black;
-    border: 3px solid black;
+    width: 100%; 
+    height: 100%;
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translateX(-50%) translateY(-50%);
+    top: 0;
+    left: 0;
+    will-change: transform; 
+    background-color: transparent; 
 }
 
 
@@ -90,4 +96,12 @@ body {
 
 #menuButton p::first-letter {
     color: white;
+}
+
+#character {
+    position: absolute;
+    z-index: 10; 
+    pointer-events: none;
+    background-size: cover;
+    background-image: url('./img/character.png'); 
 }
