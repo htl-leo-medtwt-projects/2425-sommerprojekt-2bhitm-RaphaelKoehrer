@@ -116,3 +116,31 @@ body {
   text-align: center;
   transform: translate(-50%, -100%);
 }
+
+#resourceBar {
+    position: absolute;
+    width: 75vh;
+    top: 20px;
+    z-index: 22;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 16px;
+    gap: 32px;
+    display: flex;
+    justify-content: center;
+}
+
+#resourceBar img {
+    height: 33px;
+    vertical-align: middle;
+    margin-right: 10px;
+}
+
+#resourceBar > div {
+    display: flex;
+    align-items: center;
+    font-size: 1.4rem;
+    color: #fff;
+    border-radius: 8px;
+    padding: 4px 16px;
+}

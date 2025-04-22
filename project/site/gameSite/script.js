@@ -53,6 +53,36 @@ let animationFrame;
 const mapPlaceholder = document.getElementById('mapPlaceholder');
 const minimapSection = document.getElementById('minimapSection');
 
+const resourceBar = document.createElement('div');
+resourceBar.id = 'resourceBar';
+resourceBar.style.display = 'flex';
+resourceBar.style.justifyContent = 'space-between';
+resourceBar.innerHTML = `
+    <div id="goldDisplay"><img src="./img/gold.png" alt="Gold"> <span id="goldValue">1000</span></div>
+    <div id="woodDisplay"><img src="./img/treePreview.png" alt="Holz"> <span id="woodValue">250</span></div>
+    <div id="buildingDisplay"><img src="./img/buildingPreview.png" alt="Gebäude"> <span id="buildingValue">1</span>/<span id="buildingGoal">-</span></div>
+`;
+
+const gameWrapper = document.getElementById('gameWrapper');
+gameWrapper.parentNode.insertBefore(resourceBar, gameWrapper);
+
+let gold = 1000;
+let wood = 250;
+let buildings = 1;
+let buildingGoal = parseInt(params.goal) || 5;
+
+document.getElementById('goldValue').textContent = gold;
+document.getElementById('woodValue').textContent = wood;
+document.getElementById('buildingValue').textContent = buildings;
+document.getElementById('buildingGoal').textContent = buildingGoal;
+
+function updateResourceBar() {
+    document.getElementById('goldValue').textContent = gold;
+    document.getElementById('woodValue').textContent = wood;
+    document.getElementById('buildingValue').textContent = buildings;
+    document.getElementById('buildingGoal').textContent = buildingGoal;
+}
+
 function drawMap() {
     const canvas = document.createElement('canvas');
     canvas.width = mapCols * tileSize;
@@ -99,7 +129,6 @@ function updateViewport() {
     const canvas = mapPlaceholder.firstChild;
     if (!canvas) return;
 
-    // Begrenzung, damit der Viewport nicht über die Map hinaus scrollt
     const viewWidth = mapPlaceholder.clientWidth / zoomFactor;
     const viewHeight = mapPlaceholder.clientHeight / zoomFactor;
     const minX = viewWidth / 2 - tileSize / 2;
@@ -141,7 +170,6 @@ function drawMinimap() {
         }
     }
 
-    // Spielerpunkt zeichnen
     ctx.fillStyle = params.team?.toLowerCase() === 'human' ? 'blue' : 'green';
     ctx.beginPath();
     ctx.arc(player.x * tileSize * scaleX + (tileSize * scaleX) / 2, player.y * tileSize * scaleY + (tileSize * scaleY) / 2, 7, 0, Math.PI * 2);
@@ -157,7 +185,6 @@ function movePlayer(dx, dy) {
     const newX = player.x + dx;
     const newY = player.y + dy;
 
-    // Check if crossing water
     if (map[player.y][player.x] === 5 || map[newY][newX] === 5) {
         alert('You died');
         player.x = 6;
@@ -206,7 +233,6 @@ function animatePlayerMovement(targetTileX, targetTileY) {
         }
         const next = path[step];
 
-        // Check if crossing water
         if (map[player.y][player.x] === 5 || map[next.y][next.x] === 5) {
             alert('You died');
             player.x = 6;
@@ -304,7 +330,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function updatePlayerElementPosition(x, y) {
         playerElement.style.transform = `translate(${x}px, ${y}px)`;
     }
-    // Optional: Initial position setzen
     updatePlayerElementPosition(player.x * tileSize, player.y * tileSize);
 });
 
