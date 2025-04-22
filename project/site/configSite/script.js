@@ -1,4 +1,3 @@
-
 function chooseTeam(team) {
      const humanButton = document.querySelector("#chooseTeam div:nth-child(2) p");
      const orcButton = document.querySelector("#chooseTeam div:nth-child(3) p");
@@ -44,12 +43,13 @@ function chooseTeam(team) {
         return;
     }
 
+    const controlPreference = new URLSearchParams(window.location.search).get('control') || 'click';
 
     const overlay = document.getElementById('transitionOverlay');
     overlay.classList.add('active');
 
     setTimeout(() => {
-        window.location.href = `../worldSite/index.html?team=${team}&username=${encodeURIComponent(username)}`;
+        window.location.href = `../worldSite/index.html?team=${team}&username=${encodeURIComponent(username)}&control=${controlPreference}`;
     }, 500); 
 }
 

@@ -2,11 +2,12 @@ function getQueryParams() {
     const params = new URLSearchParams(window.location.search);
     const team = params.get('team');
     const username = params.get('username');
+    const control = params.get('control');
 
-    if (team && username) {
-        console.log(`Team: ${team}, Username: ${username}`);
+    if (team && username && control) {
+        console.log(`Team: ${team}, Username: ${username}, Control: ${control}`);
     } else {
-        alert("Username oder Team nicht gefunden!");
+        alert("Username, Team oder Steuerung nicht gefunden!");
     }
 
     fadeInPage();
@@ -93,7 +94,6 @@ function confirmSelection() {
 
     console.log(`Map: ${selectedMap}, Resource: ${selectedResource}, Goal: ${selectedGoal}, Time Limit: ${selectedTimeLimit}, Mission: ${selectedMission}`);
 
-
     const overlay = document.getElementById('transitionOverlay');
     if (overlay) {
         overlay.classList.remove('hidden');
@@ -103,6 +103,7 @@ function confirmSelection() {
             const params = new URLSearchParams({
                 username: new URLSearchParams(window.location.search).get('username'),
                 team: new URLSearchParams(window.location.search).get('team'),
+                control: new URLSearchParams(window.location.search).get('control'),
                 map: selectedMap,
                 resource: selectedResource,
                 goal: selectedGoal,

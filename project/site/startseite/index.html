@@ -60,6 +60,13 @@
         </div>
         <div id="settingsContent">
             <p>Einstellungen folgen...</p>
+            <div class="settings-option">
+                <label for="controlSelect">Bewegung:</label>
+                <select id="controlSelect" onchange="saveControlPreference()">
+                    <option value="click" selected>Mausklick</option>
+                    <option value="wasd">WASD</option>
+                </select>
+            </div>
         </div>
     </div>
 

@@ -103,6 +103,9 @@ body {
     pointer-events: none;
     background-size: cover;
     background-image: url('./img/character.png'); 
+    width: 64px; 
+    height: 64px; 
+    transition: transform 0.2s linear;
 }
 
 #playerName {

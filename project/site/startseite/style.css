@@ -261,4 +261,29 @@ body {
     color: white;
 }
 
+#settingsContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.settings-option {
+    margin: 10px 0;
+    color: var(--yellow-color);
+    font-size: 1.5rem;
+    text-shadow: 2px 2px 0 #000000, 4px 4px 0 #000000;
+}
+
+.settings-option input {
+    margin-right: 10px;
+}
+
+.settings-option select {
+    margin-left: 10px;
+    font-size: 1rem;
+    padding: 5px;
+    border-radius: 5px;
+}
+
 
