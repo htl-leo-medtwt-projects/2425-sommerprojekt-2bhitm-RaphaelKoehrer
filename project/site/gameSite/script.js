@@ -1,200 +1,201 @@
-function getQueryParams() {
-    const params = new URLSearchParams(window.location.search);
-    const username = params.get('username');
-    const team = params.get('team');
-    const map = params.get('map');
-    const resource = params.get('resource');
-    const goal = params.get('goal');
-    const timeLimit = params.get('timeLimit');
-    const mission = params.get('mission');
 
-    console.log(`Username: ${username}`);
-    console.log(`Team: ${team}`);
-    console.log(`Map: ${map}`);
-    console.log(`Resource: ${resource}`);
-    console.log(`Goal: ${goal}`);
-    console.log(`Time Limit: ${timeLimit}`);
-    console.log(`Mission: ${mission}`);
+const tileSize = 64;
+const zoomFactor = 1.35;
+const mapCols = 20;
+const mapRows = 20;
 
-    document.getElementById('usernameDisplay').textContent = `Username: ${username}`;
-    document.getElementById('teamDisplay').textContent = `Team: ${team}`;
-    document.getElementById('mapDisplay').textContent = `Map: ${map}`;
-    document.getElementById('resourceDisplay').textContent = `Resource: ${resource}`;
-    document.getElementById('goalDisplay').textContent = `Goal: ${goal}`;
-    document.getElementById('timeLimitDisplay').textContent = `Time Limit: ${timeLimit}`;
-    document.getElementById('missionDisplay').textContent = `Mission: ${mission}`;
-}
+const tileSources = {
+    1: 'img/grass1.png',
+    2: 'img/grass2.png',
+    3: 'img/tree1.png',
+    4: 'img/tree2.png',
+    5: 'img/water.png',
+    6: 'img/waterGrassLeft.png',
+    7: 'img/waterGrassRight.png',
+    8: 'img/waterLandLeft.png',
+    9: 'img/waterLandRight.png'
+  };
 
-function fadeInPage() {
-    console.log("fadeInPage called");
-    const overlay = document.getElementById('transitionOverlay');
-    if (overlay) {
-        overlay.classList.add('hidden'); 
-        console.log("Overlay hidden");
-    } else {
-        console.error("Overlay not found");
-    }
-}
+const tileImages = {};
+let tilesLoaded = 0;
 
-const mapContainer = document.getElementById('mapContainer');
+const params = GetQueryParams();
+const playerName = params.username;
+
+const map = [
+  [3,3,3,3,4,4,4,3,6,8,5,9,7,4,4,3,3,4,3,3],
+  [4,3,3,3,4,4,3,4,6,8,5,9,7,4,4,3,3,3,4,3],
+  [3,4,4,3,3,4,3,3,6,8,5,9,7,4,3,4,3,3,4,4],
+  [4,4,3,3,4,3,3,3,6,8,5,9,7,4,3,4,3,3,3,4],
+  [1,1,2,1,1,1,1,1,6,8,5,9,7,2,1,1,1,2,2,2],
+  [1,1,1,2,2,1,1,2,6,8,5,9,7,2,2,1,1,1,2,1],
+  [1,1,2,2,1,1,1,1,6,8,5,9,7,6,6,6,1,1,1,1],
+  [1,1,2,2,2,2,2,1,6,8,5,9,7,6,6,6,1,1,1,1],
+  [1,1,1,1,1,2,1,1,6,8,5,9,7,6,6,6,1,1,1,1],
+  [1,1,2,1,1,2,2,1,6,8,5,9,7,6,6,6,1,1,1,1],
+  [1,1,1,1,1,1,1,1,6,8,5,9,7,1,1,1,1,1,1,1],
+  [1,1,1,1,1,2,2,1,6,8,5,9,7,7,1,1,7,7,1,1],
+  [1,1,1,1,1,1,1,1,6,8,5,9,7,1,1,1,1,1,1,1],
+  [1,2,1,1,1,1,1,1,6,8,5,9,7,1,4,4,1,1,1,1],
+  [1,1,1,1,1,1,1,1,6,8,5,9,7,1,1,1,1,1,1,1],
+  [2,2,1,2,1,2,1,2,6,8,5,9,7,2,2,1,1,2,1,2],
+  [4,4,3,3,4,3,3,3,6,8,5,9,7,4,3,4,3,3,3,4],
+  [3,3,3,4,4,4,4,3,6,8,5,9,7,1,1,4,4,1,1,1],
+  [3,3,3,3,4,4,4,3,6,8,5,9,7,4,4,3,3,4,3,3],
+  [4,3,3,3,4,4,3,4,6,8,5,9,7,4,4,3,3,3,4,3],
+];
+
+let player = { x: 10, y: 10 };
+let target = null;
+let moving = false;
+
 const mapPlaceholder = document.getElementById('mapPlaceholder');
-const MAP_SIZE = 64; 
-const TILE_SIZE = 32;
-const VISIBLE_MAP_SIZE = 5; 
+const minimapSection = document.getElementById('minimapSection');
 
-const TILESET_IMAGE = './img/tileset.png'; 
-const TILESET_TILE_SIZE = 32;
-const TILESET_COLUMNS = 10; 
+function drawMap() {
+  const canvas = document.createElement('canvas');
+  canvas.width = mapCols * tileSize;
+  canvas.height = mapRows * tileSize;
+  const ctx = canvas.getContext('2d');
 
-const TILE_TYPES = {
-    grass: [0, 9], 
-    water: [10, 19], 
-    rock: [20, 29], 
-};
-
-
-const SPRITE_SIZE = 64; 
-const characterSprite = document.createElement('div');
-characterSprite.id = 'character';
-characterSprite.style.width = `${SPRITE_SIZE}px`;
-characterSprite.style.height = `${SPRITE_SIZE}px`;
-characterSprite.style.backgroundImage = 'url(./img/character_spritesheet.png)';
-characterSprite.style.backgroundSize = '256px 256px'; 
-characterSprite.style.position = 'absolute';
-characterSprite.style.zIndex = '10';
-mapContainer.appendChild(characterSprite);
-
-let characterPosition = { x: Math.floor(MAP_SIZE / 2), y: Math.floor(MAP_SIZE / 2) };
-let animationFrame = 0;
-
-function generateMapData(size) {
-    const map = [];
-    for (let y = 0; y < size; y++) {
-        const row = [];
-        for (let x = 0; x < size; x++) {
-            const tileType = Math.random();
-            let tileID;
-
-            if (tileType < 0.6) {
-                tileID = randomTileID(TILE_TYPES.grass);
-            } else if (tileType < 0.8) {
-                tileID = randomTileID(TILE_TYPES.water);
-            } else {
-                tileID = randomTileID(TILE_TYPES.rock);
-            }
-
-            row.push(tileID);
-        }
-        map.push(row);
+  for (let y = 0; y < mapRows; y++) {
+    for (let x = 0; x < mapCols; x++) {
+      const tileId = map[y][x];
+      const img = tileImages[tileId];
+      if (img) {
+        ctx.drawImage(img, x * tileSize, y * tileSize, tileSize, tileSize);
+      }
     }
-    return map;
+  }
+
+  function drawName() {
+    ctx.fillStyle = 'white';
+    ctx.strokeStyle = 'black';
+    ctx.font = 'bold 14px sans-serif';
+    ctx.lineWidth = 2;
+    const px = player.x * tileSize + tileSize / 2;
+    const py = player.y * tileSize + tileSize / 2;
+    const textWidth = ctx.measureText(playerName).width;
+    ctx.strokeText(playerName, px - textWidth / 2, py - tileSize / 2);
+    ctx.fillText(playerName, px - textWidth / 2, py - tileSize / 2);
+  }
+
+  canvas.addEventListener('click', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const clickX = (e.clientX - rect.left) / zoomFactor;
+    const clickY = (e.clientY - rect.top) / zoomFactor;
+    const tileX = Math.floor(clickX / tileSize);
+    const tileY = Math.floor(clickY / tileSize);
+
+    if (tileX >= 0 && tileX < mapCols && tileY >= 0 && tileY < mapRows) {
+      target = { x: tileX, y: tileY };
+      if (!moving) smoothMove();
+    }
+  });
+
+  mapPlaceholder.innerHTML = '';
+  mapPlaceholder.appendChild(canvas);
+
+  updateViewport();
+  drawName();
 }
 
-function randomTileID(range) {
-    const [min, max] = range;
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+function updateViewport() {
+  const canvas = mapPlaceholder.firstChild;
+  if (!canvas) return;
+
+  const offsetX = -(player.x * tileSize * zoomFactor - mapPlaceholder.clientWidth / 2 + tileSize / 2);
+  const offsetY = -(player.y * tileSize * zoomFactor - mapPlaceholder.clientHeight / 2 + tileSize / 2);
+
+  canvas.style.transform = `scale(${zoomFactor}) translate(${offsetX / zoomFactor}px, ${offsetY / zoomFactor}px)`;
+  canvas.style.transformOrigin = 'top left';
+
+  drawMinimap();
 }
 
-const mapData = generateMapData(MAP_SIZE);
+function drawMinimap() {
+  minimapSection.innerHTML = '';
+  const canvas = document.createElement('canvas');
+  canvas.width = 300;
+  canvas.height = 300;
+  const ctx = canvas.getContext('2d');
 
-function renderMap() {
-    mapPlaceholder.style.width = `${MAP_SIZE * TILE_SIZE}px`;
-    mapPlaceholder.style.height = `${MAP_SIZE * TILE_SIZE}px`;
-    mapPlaceholder.innerHTML = '';
+  const scaleX = canvas.width / (mapCols * tileSize);
+  const scaleY = canvas.height / (mapRows * tileSize);
 
-    mapData.forEach((row, y) => {
-        row.forEach((tileID, x) => {
-            const tileElement = document.createElement('div');
-            tileElement.style.width = `${TILE_SIZE}px`;
-            tileElement.style.height = `${TILE_SIZE}px`;
-            tileElement.style.position = 'absolute';
-            tileElement.style.left = `${x * TILE_SIZE}px`;
-            tileElement.style.top = `${y * TILE_SIZE}px`;
+  for (let y = 0; y < mapRows; y++) {
+    for (let x = 0; x < mapCols; x++) {
+      const tileId = map[y][x];
+      const img = tileImages[tileId];
+      if (img) {
+        ctx.drawImage(img, x * tileSize * scaleX, y * tileSize * scaleY, tileSize * scaleX, tileSize * scaleY);
+      }
+    }
+  }
 
-            const tileX = tileID % TILESET_COLUMNS; 
-            const tileY = Math.floor(tileID / TILESET_COLUMNS); 
-            const backgroundX = tileX * TILESET_TILE_SIZE; 
-            const backgroundY = tileY * TILESET_TILE_SIZE; 
+  ctx.fillStyle = 'red';
+  ctx.fillRect(player.x * tileSize * scaleX, player.y * tileSize * scaleY, tileSize * scaleX, tileSize * scaleY);
 
-            tileElement.style.backgroundImage = `url(${TILESET_IMAGE})`;
-            tileElement.style.backgroundPosition = `-${backgroundX}px -${backgroundY}px`;
-            tileElement.style.backgroundSize = `${TILESET_COLUMNS * TILESET_TILE_SIZE}px auto`;
-
-            mapPlaceholder.appendChild(tileElement);
-        });
-    });
+  minimapSection.appendChild(canvas);
 }
 
-renderMap();
+function smoothMove() {
+  if (!target) return;
+  moving = true;
 
-function updateCharacterPosition() {
-    const mapOffsetX = Math.min(
-        Math.max(0, characterPosition.x - Math.floor(VISIBLE_MAP_SIZE / 2)),
-        MAP_SIZE - VISIBLE_MAP_SIZE
-    );
-    const mapOffsetY = Math.min(
-        Math.max(0, characterPosition.y - Math.floor(VISIBLE_MAP_SIZE / 2)),
-        MAP_SIZE - VISIBLE_MAP_SIZE
-    );
+  if (player.x === target.x && player.y === target.y) {
+    moving = false;
+    return;
+  }
 
-    mapPlaceholder.style.transform = `translate(${-mapOffsetX * TILE_SIZE}px, ${-mapOffsetY * TILE_SIZE}px)`;
+  if (player.x < target.x) player.x++;
+  else if (player.x > target.x) player.x--;
 
-    characterSprite.style.left = `${(characterPosition.x - mapOffsetX) * TILE_SIZE}px`;
-    characterSprite.style.top = `${(characterPosition.y - mapOffsetY) * TILE_SIZE}px`;
+  else if (player.y < target.y) player.y++;
+  else if (player.y > target.y) player.y--;
+
+  updateViewport();
+  drawMap();
+  setTimeout(smoothMove, 100);
 }
 
 
-function updateCharacterAnimation(direction) {
-    animationFrame = (animationFrame + 1) % 4;
-    const directionOffset = {
-        down: 0,
-        left: 1,
-        right: 2,
-        up: 3,
+function movePlayer(dx, dy) {
+  const newX = player.x + dx;
+  const newY = player.y + dy;
+  if (newX >= 0 && newX < mapCols && newY >= 0 && newY < mapRows) {
+    player.x = newX;
+    player.y = newY;
+    updateViewport();
+    drawMap();
+  }
+}
+
+function GetQueryParams() {
+  const params = {};
+  window.location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(_, key, value) {
+    params[key] = decodeURIComponent(value);
+  });
+  return params;
+}
+
+function loadTiles() {
+  const totalTiles = Object.keys(tileSources).length;
+
+  for (const [id, src] of Object.entries(tileSources)) {
+    const img = new Image();
+    img.src = src;
+    img.onload = () => {
+      tileImages[id] = img;
+      tilesLoaded++;
+      if (tilesLoaded === totalTiles) {
+        drawMap();
+      }
     };
-    const offsetY = directionOffset[direction] * SPRITE_SIZE;
-    characterSprite.style.backgroundPosition = `-${animationFrame * SPRITE_SIZE}px -${offsetY}px`;
+    img.onerror = () => {
+      console.error(`Fehler beim Laden von Bild: ${src}`);
+    };
+  }
 }
 
-
-document.addEventListener('keydown', (event) => {
-    let moved = false;
-    switch (event.key.toLowerCase()) {
-        case 'w': 
-            if (characterPosition.y > 0) {
-                characterPosition.y--;
-                updateCharacterAnimation('up');
-                moved = true;
-            }
-            break;
-        case 's': 
-            if (characterPosition.y < MAP_SIZE - 1) {
-                characterPosition.y++;
-                updateCharacterAnimation('down');
-                moved = true;
-            }
-            break;
-        case 'a': 
-            if (characterPosition.x > 0) {
-                characterPosition.x--;
-                updateCharacterAnimation('left');
-                moved = true;
-            }
-            break;
-        case 'd': 
-            if (characterPosition.x < MAP_SIZE - 1) {
-                characterPosition.x++;
-                updateCharacterAnimation('right');
-                moved = true;
-            }
-            break;
-    }
-    if (moved) updateCharacterPosition();
-});
-
-
-window.onload = function () {
-    fadeInPage();
-    getQueryParams();
-    updateCharacterPosition();
-};
+loadTiles();
