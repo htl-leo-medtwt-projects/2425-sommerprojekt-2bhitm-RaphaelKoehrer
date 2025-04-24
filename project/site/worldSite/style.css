@@ -208,3 +208,15 @@ h1.yellow {
     opacity: 0;
     pointer-events: none;
 }
+
+#audioSetter img{
+    position: absolute;
+    z-index: 112;
+    bottom: 30px;
+    left: 50px;
+    width: 75px;
+}
+#audioSetter {
+    width: fit-content;
+    height: fit-content;
+}

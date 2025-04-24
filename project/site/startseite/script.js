@@ -40,3 +40,17 @@ function showLeaderboard() {
  function closeSettings() {
      document.getElementById('settings').style.display = 'none';
  }
+
+ let countAudio = 0;
+ function changeAudio() {
+     if (countAudio % 2 === 0 ) {
+         document.getElementById('audioImg').src = '../sounds/audioImg.png';
+     }else {
+         document.getElementById('audioImg').src = '../sounds/mutedImg.png';
+     }
+    
+     MusicPlayer(countAudio);
+     countAudio++;
+ }
+
+ saveControlPreference();

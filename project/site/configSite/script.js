@@ -58,3 +58,14 @@ function chooseTeam(team) {
      overlay.classList.add('hidden');
  }
 
+ let countAudio = 0;
+ function changeAudio() {
+     if (countAudio % 2 === 0 ) {
+         document.getElementById('audioImg').src = '../sounds/audioImg.png';
+     }else {
+         document.getElementById('audioImg').src = '../sounds/mutedImg.png';
+     }
+    
+     MusicPlayer(countAudio);
+     countAudio++;
+ }
