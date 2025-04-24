@@ -48,6 +48,9 @@ body {
     background-color: transparent; 
 }
 
+#mapPlaceholder div {
+    pointer-events: none; 
+}
 
 #minimapSection {
     position: absolute;
@@ -143,4 +146,9 @@ body {
     color: #fff;
     border-radius: 8px;
     padding: 4px 16px;
+}
+        
+.tree-highlight {
+    outline: 2px solid lightgreen;
+    outline-offset: -2px;
 }

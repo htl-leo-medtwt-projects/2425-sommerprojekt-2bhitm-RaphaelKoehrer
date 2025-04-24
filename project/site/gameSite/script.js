@@ -6,13 +6,19 @@ const mapRows = 20;
 const tileSources = {
     1: 'img/grass1.png',
     2: 'img/grass2.png',
-    3: 'img/tree1.png',
-    4: 'img/tree2.png',
+    3: 'img/Trees/tree1/tree1.png',
+    4: 'img/Trees/tree2/tree2.png',
     5: 'img/water.png',
     6: 'img/waterGrassLeft.png',
     7: 'img/waterGrassRight.png',
     8: 'img/waterLandLeft.png',
-    9: 'img/waterLandRight.png'
+    9: 'img/waterLandRight.png',
+    31: 'img/Trees/tree1/tree1_2.png',
+    32: 'img/Trees/tree1/tree1_3.png',
+    33: 'img/Trees/tree1/tree1_4.png',
+    41: 'img/Trees/tree2/tree2_2.png',
+    42: 'img/Trees/tree2/tree2_3.png',
+    43: 'img/Trees/tree2/tree2_4.png'
 };
 
 const tileImages = {};
@@ -29,18 +35,18 @@ const map = [
   [4,4,3,3,4,3,3,3,6,8,5,9,7,4,3,4,3,3,3,4],
   [1,1,2,1,1,1,1,1,6,8,5,9,7,2,1,1,1,2,2,2],
   [1,1,1,2,2,1,1,2,6,8,5,9,7,2,2,1,1,1,2,1],
-  [1,1,2,2,1,1,1,1,6,8,5,9,7,6,6,6,1,1,1,1],
-  [1,1,2,2,2,2,2,1,6,8,5,9,7,6,6,6,1,1,1,1],
-  [1,1,1,1,1,2,1,1,6,8,5,9,7,6,6,6,1,1,1,1],
-  [1,1,2,1,1,2,2,1,6,8,5,9,7,6,6,6,1,1,1,1],
+  [1,1,2,2,1,1,1,1,6,8,5,9,7,1,1,2,1,1,1,1],
+  [1,1,2,2,2,2,2,1,6,8,5,9,7,1,2,2,1,1,1,2],
+  [1,1,1,1,1,2,1,1,6,8,5,9,7,2,2,1,1,2,1,1],
+  [1,1,2,1,1,2,2,1,6,8,5,9,7,1,1,1,1,1,1,1],
   [1,1,1,1,1,1,1,1,6,8,5,9,7,1,1,1,1,1,1,1],
-  [1,1,1,1,1,2,2,1,6,8,5,9,7,7,1,1,7,7,1,1],
+  [1,1,1,1,1,2,2,1,6,8,5,9,7,1,1,1,2,2,1,1],
   [1,1,1,1,1,1,1,1,6,8,5,9,7,1,1,1,1,1,1,1],
-  [1,2,1,1,1,1,1,1,6,8,5,9,7,1,4,4,1,1,1,1],
+  [1,2,1,1,1,1,1,1,6,8,5,9,7,1,1,2,2,1,1,1],
   [1,1,1,1,1,1,1,1,6,8,5,9,7,1,1,1,1,1,1,1],
   [2,2,1,2,1,2,1,2,6,8,5,9,7,2,2,1,1,2,1,2],
   [4,4,3,3,4,3,3,3,6,8,5,9,7,4,3,4,3,3,3,4],
-  [3,3,3,4,4,4,4,3,6,8,5,9,7,1,1,4,4,1,1,1],
+  [3,3,3,4,4,4,4,3,6,8,5,9,7,3,3,4,4,3,4,4],
   [3,3,3,3,4,4,4,3,6,8,5,9,7,4,4,3,3,4,3,3],
   [4,3,3,3,4,4,3,4,6,8,5,9,7,4,4,3,3,3,4,3],
 ];
@@ -49,6 +55,7 @@ let player = { x: 5, y: 7, animX: 5, animY: 7 };
 let target = null;
 let moving = false;
 let animationFrame;
+let isChoppingTree = false; 
 
 const mapPlaceholder = document.getElementById('mapPlaceholder');
 const minimapSection = document.getElementById('minimapSection');
@@ -179,6 +186,11 @@ function drawMinimap() {
 }
 
 function movePlayer(dx, dy) {
+    if (isChoppingTree) {
+        showTreeMessage("You're already chopping a tree!");
+        return;
+    }
+
     player.x = Math.round(player.x);
     player.y = Math.round(player.y);
 
@@ -212,7 +224,10 @@ function movePlayer(dx, dy) {
 }
 
 function animatePlayerMovement(targetTileX, targetTileY) {
-    if (moving) return;
+    if (moving || isChoppingTree) {
+        if (isChoppingTree) showTreeMessage("You're already chopping a tree!");
+        return;
+    }
     moving = true;
     const path = [];
     let cx = player.x;
@@ -264,11 +279,130 @@ function handleCanvasClick(e) {
     const tileX = Math.floor(clickX / tileSize);
     const tileY = Math.floor(clickY / tileSize);
 
-    if (tileX >= 0 && tileX < mapCols && tileY >= 0 && tileY < mapRows &&
-        ![3, 4].includes(map[tileY][tileX])) {
+    const tileId = map[tileY]?.[tileX];
+    if (tileId === 3 || tileId === 4) {
+        highlightTreeTile(tileX, tileY);
+        chopTree(tileX, tileY, tileId);
+    } else if (tileX >= 0 && tileX < mapCols && tileY >= 0 && tileY < mapRows) {
         animatePlayerMovement(tileX, tileY);
     }
 }
+
+function highlightTreeTile(tileX, tileY) {
+    const canvas = mapPlaceholder.firstChild;
+    const ctx = canvas.getContext('2d');
+    const x = tileX * tileSize;
+    const y = tileY * tileSize;
+
+    ctx.strokeStyle = 'lightgreen';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(x, y, tileSize, tileSize);
+}
+
+function handleCanvasRightClick(e) {
+    e.preventDefault();
+    const rect = e.target.getBoundingClientRect();
+    const clickX = (e.clientX - rect.left) / zoomFactor;
+    const clickY = (e.clientY - rect.top) / zoomFactor;
+    const tileX = Math.floor(clickX / tileSize);
+    const tileY = Math.floor(clickY / tileSize);
+
+    const tileId = map[tileY]?.[tileX];
+    if (tileId === 3 || tileId === 4) {
+        const adjacentGrassTile = findAdjacentGrassTile(tileX, tileY);
+        if (adjacentGrassTile) {
+            const { x: targetX, y: targetY } = adjacentGrassTile;
+            const isAdjacent =
+                Math.abs(player.x - targetX) + Math.abs(player.y - targetY) === 0;
+
+            if (isAdjacent) {
+                chopTree(tileX, tileY, tileId);
+            } else {
+                animatePlayerMovement(targetX, targetY);
+                setTimeout(() => {
+                    if (
+                        Math.abs(player.x - targetX) + Math.abs(player.y - targetY) === 0 &&
+                        map[tileY]?.[tileX] === tileId
+                    ) {
+                        chopTree(tileX, tileY, tileId);
+                    }
+                }, 500); 
+            }
+        }
+    }
+}
+
+function findAdjacentGrassTile(treeX, treeY) {
+    const directions = [
+        { dx: 0, dy: -1 }, 
+        { dx: 0, dy: 1 },  
+        { dx: -1, dy: 0 }, 
+        { dx: 1, dy: 0 }  
+    ];
+
+    for (const { dx, dy } of directions) {
+        const adjacentX = treeX + dx;
+        const adjacentY = treeY + dy;
+        if (map[adjacentY]?.[adjacentX] === 1 || map[adjacentY]?.[adjacentX] === 2) {
+            return { x: adjacentX, y: adjacentY };
+        }
+    }
+    return null;
+}
+
+function showTreeMessage(message) {
+    const msg = document.createElement('div');
+    msg.textContent = message;
+    msg.style.position = 'absolute';
+    msg.style.left = `${player.x * tileSize + tileSize / 2}px`;
+    msg.style.top = `${player.y * tileSize - tileSize / 2}px`;
+    msg.style.color = 'white';
+    msg.style.fontSize = '20px'; 
+    msg.style.letterSpacing = '2px'; 
+    msg.style.fontWeight = 'bold';
+    msg.style.textShadow = '1px 1px 2px black';
+    msg.style.transition = 'transform 2s, opacity 2s';
+    msg.style.transform = 'translateY(0)';
+    msg.style.opacity = '1';
+    mapPlaceholder.appendChild(msg);
+
+    setTimeout(() => {
+        msg.style.transform = 'translateY(-50px)';
+        msg.style.opacity = '0';
+        setTimeout(() => msg.remove(), 2000);
+    }, 0);
+}
+
+function chopTree(tileX, tileY, tileId) {
+    if (isChoppingTree) {
+        showTreeMessage("You're already chopping a tree!");
+        return;
+    }
+
+    isChoppingTree = true;
+    const isTree1 = tileId === 3;
+    const animationFrames = isTree1 ? [31, 32, 33] : [41, 42, 43];
+    let currentFrame = 0;
+
+    const animateChop = () => {
+        if (currentFrame < animationFrames.length) {
+            map[tileY][tileX] = animationFrames[currentFrame];
+            drawMap();
+            currentFrame++;
+            setTimeout(animateChop, 2500);
+        } else {
+            map[tileY][tileX] = Math.random() < 0.5 ? 1 : 2;
+            wood += 50;
+            updateResourceBar();
+            drawMap();
+            isChoppingTree = false;
+        }
+    };
+
+    animateChop();
+}
+
+document.addEventListener('contextmenu', handleCanvasRightClick);
 
 function checkIfPlayerDied() {
     const currentTile = map[Math.floor(player.y)][Math.floor(player.x)];
@@ -307,6 +441,10 @@ function loadTiles() {
 
 if (controlType === 'wasd') {
     document.addEventListener('keydown', (e) => {
+        if (['w', 'a', 's', 'd'].includes(e.key.toLowerCase()) && isChoppingTree) {
+            showTreeMessage("You're already chopping a tree!");
+            return;
+        }
         if (['w', 'a', 's', 'd'].includes(e.key.toLowerCase())) {
             e.preventDefault();
             switch (e.key.toLowerCase()) {
@@ -318,6 +456,32 @@ if (controlType === 'wasd') {
         }
     });
 }
+
+document.addEventListener('keydown', (e) => {
+    if (e.key.toLowerCase() === 'g') {
+        if (isChoppingTree) {
+            showTreeMessage("You're currently chopping a tree!");
+            return;
+        }
+        const directions = [
+            { dx: 0, dy: -1 },
+            { dx: 0, dy: 1 },
+            { dx: -1, dy: 0 },
+            { dx: 1, dy: 0 }
+        ];
+
+        for (const { dx, dy } of directions) {
+            const targetX = player.x + dx;
+            const targetY = player.y + dy;
+
+            const tileId = map[targetY]?.[targetX];
+            if (tileId === 3 || tileId === 4) {
+                chopTree(targetX, targetY, tileId);
+                break;
+            }
+        }
+    }
+});
 
 document.addEventListener('DOMContentLoaded', () => {
     const mapPlaceholder = document.getElementById('mapPlaceholder');
