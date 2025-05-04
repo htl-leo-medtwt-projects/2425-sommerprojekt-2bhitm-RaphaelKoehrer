@@ -3,7 +3,6 @@
     src: url(./fonts/LifeCraft_Font.ttf);
 }
 
-
 body {
     margin: 0;
     padding: 0;
@@ -61,7 +60,6 @@ body {
     background-color: black;
     border: 3px solid black; 
 }
-
 
 #menuButton {
     position: absolute;
@@ -152,7 +150,6 @@ body {
     outline: 2px solid lightgreen;
     outline-offset: -2px;
 }
-
 
 #startGame {
     display: flex;
@@ -247,6 +244,40 @@ body {
     height: fit-content;
 }
 
+#buildSection {
+    position: absolute;
+    top: 47.5%;
+    left: 5%;
+    width: 300px;
+    height: 300px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: start;
+    justify-content: start;
+    color: var(--yellow-color);
+    font-family: 'custom';
+    font-size: 2rem;
+    user-select: none;
+    border: 3px solid black;
+    background-color: rgba(0, 0, 0, 0.45);
+}
+
+#buildSection p {
+    margin: 0;
+    font-size: 2rem;
+    color: var(--yellow-color);
+    text-shadow: 1px 1px 2px black;
+    text-align: center;
+}
+
+#buildSection img {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 2px;
+    cursor: pointer;
+}
+
 @keyframes pulse {
     0%, 100% {
       transform: scale(1);
@@ -254,4 +285,46 @@ body {
     50% {
       transform: scale(1.1);
     }
+}
+
+#gameOverScreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.85);
+    color: white;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 3000;
+    flex-direction: column;
+    text-align: center;
+}
+
+#gameOverScreen h1 {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+}
+
+#gameOverScreen p {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+}
+
+#restartButton {
+    font-size: 1.5rem;
+    padding: 1rem 2rem;
+    background-color: var(--yellow-color);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    color: black;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+#restartButton:hover {
+    background-color: #d4d43a;
 }

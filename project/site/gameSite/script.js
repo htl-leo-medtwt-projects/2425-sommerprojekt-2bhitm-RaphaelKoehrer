@@ -1,4 +1,6 @@
 
+let gold = 1000;
+let wood = 250;
 function StartGame() {
     const params = GetQueryParams();
 
@@ -39,7 +41,9 @@ function StartGame() {
             33: 'img/Trees/tree1/tree1_4.png',
             41: 'img/Trees/tree2/tree2_2.png',
             42: 'img/Trees/tree2/tree2_3.png',
-            43: 'img/Trees/tree2/tree2_4.png'
+            43: 'img/Trees/tree2/tree2_4.png',
+            999: 'img/mine.png',
+            1000: './img/build/bridge.png',
         };
         
         loadTiles();
@@ -62,6 +66,33 @@ function StartGame() {
                 43: 'img/winter/Trees/tree2/tree2_4.png',
                 100: 'img/winter/Water/waterGrassLeft2.png',
                 101: 'img/winter/Water/waterGrassRight2.png',
+                999: 'img/mine_winter.png',
+                1000: './img/build/bridge.png',
+        };
+        }
+        
+        loadTiles();
+    }else if (params.map == "map3") {
+        if (params.map == "map3") {
+            tileSources = { 1: 'img/swamp/Grass/grass.png', 
+                2: 'img/swamp/Grass/grass2.png',
+                3: 'img/swamp/Trees/tree1/tree1.png', 
+                4: 'img/swamp/Trees/tree2/tree2.png', 
+                5: 'img/swamp/Water/water.png', 
+                6: 'img/swamp/Grass/grass2.png', 
+                7: 'img/swamp/Grass/grass.png', 
+                8: 'img/swamp/Water/waterLeft.png', 
+                9: 'img/swamp/Water/waterRight.png', 
+                31: 'img/swamp/Trees/tree1/tree1_2.png', 
+                32: 'img/swamp/Trees/tree1/tree1_3.png', 
+                33: 'img/swamp/Trees/tree1/tree1_4.png', 
+                41: 'img/swamp/Trees/tree2/tree2_2.png', 
+                42: 'img/swamp/Trees/tree2/tree2_3.png', 
+                43: 'img/swamp/Trees/tree2/tree2_4.png',
+                100: 'img/winter/Water/waterGrassLeft2.png',
+                101: 'img/winter/Water/waterGrassRight2.png',
+                999: 'img/mine.png',
+                1000: './img/build/bridge.png',
         };
         }
         
@@ -83,7 +114,9 @@ function StartGame() {
             33: 'img/Trees/tree1/tree1_4.png',
             41: 'img/Trees/tree2/tree2_2.png',
             42: 'img/Trees/tree2/tree2_3.png',
-            43: 'img/Trees/tree2/tree2_4.png'
+            43: 'img/Trees/tree2/tree2_4.png',
+            999: 'img/mine.png',
+            1000: './img/build/bridge.png',
         };
         
         loadTiles();
@@ -149,6 +182,30 @@ function StartGame() {
             [2, 1, 1, 1, 2, 1, 1, 2, 6, 100, 5, 101, 7, 4, 4, 3, 3, 3, 4, 3],
         ];
         
+    }else if (params.map == "map3") {
+        map = [ 
+            [3, 3, 3, 3, 4, 4, 4, 3, 1, 8, 5, 9, 7, 4, 4, 3, 3, 4, 3, 3],
+            [4, 3, 3, 3, 4, 4, 3, 4, 1, 8, 5, 9, 7, 4, 4, 3, 3, 3, 4, 3],
+            [3, 4, 4, 3, 3, 4, 3, 3, 1, 8, 5, 9, 7, 1, 3, 4, 3, 3, 4, 4],
+            [4, 4, 3, 3, 4, 3, 3, 3, 1, 8, 5, 9, 7, 1, 2, 4, 3, 3, 3, 4],
+            [3, 4, 3, 4, 4, 3, 1, 1, 1, 8, 5, 9, 7, 2, 1, 1, 3, 4, 4, 2],
+            [4, 4, 3, 2, 2, 1, 1, 2, 1, 8, 5, 9, 7, 2, 2, 1, 1, 4, 3, 4],
+            [4, 3, 2, 2, 1, 1, 1, 1, 1, 8, 5, 9, 7, 1, 1, 2, 1, 1, 3, 4],
+            [3, 1, 2, 2, 2, 2, 2, 1, 1, 8, 5, 9, 7, 1, 2, 2, 1, 1, 1, 2],
+            [1, 1, 1, 1, 1, 2, 1, 1, 1, 8, 5, 9, 7, 2, 2, 1, 1, 2, 1, 1],
+            [1, 1, 2, 1, 1, 2, 2, 1, 1, 8, 5, 9, 7, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 8, 5, 9, 7, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 2, 2, 1, 1, 8, 5, 9, 7, 1, 1, 1, 2, 2, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 8, 5, 9, 7, 1, 1, 1, 1, 1, 1, 1],
+            [3, 3, 1, 1, 1, 1, 1, 1, 1, 8, 5, 9, 7, 1, 1, 2, 2, 1, 1, 1],
+            [3, 4, 4, 4, 1, 1, 1, 1, 1, 8, 5, 9, 7, 1, 1, 1, 1, 1, 1, 1],
+            [3, 4, 4, 4, 4, 3, 2, 2, 1, 8, 5, 9, 7, 2, 2, 1, 1, 2, 1, 2],
+            [4, 4, 3, 3, 4, 3, 1, 2, 1, 8, 5, 9, 7, 2, 2, 1, 1, 1, 3, 4],
+            [2, 2, 3, 4, 4, 1, 1, 2, 1, 8, 5, 9, 7, 1, 1, 1, 4, 3, 4, 4],
+            [1, 2, 1, 1, 2, 2, 1, 2, 1, 8, 5, 9, 7, 1, 2, 3, 3, 4, 3, 3],
+            [2, 1, 1, 1, 2, 1, 1, 2, 1, 8, 5, 9, 7, 4, 4, 3, 3, 3, 4, 3],
+        ];
+        
     }else {
         map = [
             [3, 3, 3, 3, 4, 4, 4, 3, 6, 8, 5, 9, 7, 4, 4, 3, 3, 4, 3, 3],
@@ -197,8 +254,6 @@ function StartGame() {
         const gameWrapper = document.getElementById('gameWrapper');
         gameWrapper.parentNode.insertBefore(resourceBar, gameWrapper);
     
-        let gold = 1000;
-        let wood = 250;
         let buildings = 1;
         let buildingGoal = parseInt(params.goal) || 5;
     
@@ -322,7 +377,7 @@ function StartGame() {
             const newY = player.y + dy;
     
             if (map[player.y][player.x] === 5 || map[newY][newX] === 5) {
-                alert('You died');
+                showGameOverScreen();
                 player.x = 6;
                 player.y = 5;
                 player.animX = 6;
@@ -373,7 +428,7 @@ function StartGame() {
                 const next = path[step];
     
                 if (map[player.y][player.x] === 5 || map[next.y][next.x] === 5) {
-                    alert('You died');
+                    showGameOverScreen();
                     player.x = 6;
                     player.y = 5;
                     player.animX = 6;
@@ -531,7 +586,7 @@ function StartGame() {
         function checkIfPlayerDied() {
             const currentTile = map[Math.floor(player.y)][Math.floor(player.x)];
             if (currentTile === 5) {
-                alert('You died');
+                showGameOverScreen();
                 player.x = 6;
                 player.y = 5;
                 updateViewport();
@@ -632,14 +687,218 @@ function delStart() {
     document.getElementById('gameWrapper').style.display = 'flex';
 }
 
-let countAudio = 1;
-function changeAudio() {
-    if (countAudio % 2 === 0 ) {
-        document.getElementById('audioImg').src = '../sounds/audioImg.png';
-    }else {
-        document.getElementById('audioImg').src = '../sounds/mutedImg.png';
+function showGameOverScreen() {
+    const gameOverScreen = document.getElementById('gameOverScreen');
+    if (gameOverScreen) {
+        gameOverScreen.style.display = 'flex';
     }
-   
-    MusicPlayer(countAudio);
-    countAudio++;
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    const restartButton = document.getElementById('restartButton');
+    if (restartButton) {
+        restartButton.addEventListener('click', () => {
+            location.href = '../startseite/index.html';
+        });
+    }
+});
+
+        let countAudio = 1;
+        function changeAudio() {
+            if (countAudio % 2 === 0 ) {
+                document.getElementById('audioImg').src = '../sounds/audioImg.png';
+            }else {
+                document.getElementById('audioImg').src = '../sounds/mutedImg.png';
+            }
+           
+            MusicPlayer(countAudio);
+            countAudio++;
+        }
+
+        const buildSection = document.getElementById('buildSection');
+        if (buildSection) {
+            const originalContent = buildSection.innerHTML;
+    
+            function showOriginalBuildSection() {
+                buildSection.innerHTML = originalContent;
+                attachBuildIconClick();
+            }
+    
+            function showBuildingOptions() {
+                buildSection.innerHTML = '';
+    
+                const buildings = [
+                    { src: './img/build/bridge.png', alt: 'Bridge' }
+                ];
+    
+                buildings.forEach(building => {
+                    const img = document.createElement('img');
+                    img.src = building.src;
+                    img.alt = building.alt;
+                    img.classList.add('buildingOption');
+                    img.style.width = '64px';
+                    img.style.height = '64px';
+                    img.style.marginBottom = '8px';
+                    img.style.cursor = 'pointer';
+                    buildSection.appendChild(img);
+    
+                    if (building.alt === 'Bridge') {
+                        img.addEventListener('click', () => {
+                            startPlacingBridge();
+                        });
+                    }
+                });
+
+                const backArrow = document.createElement('img');
+                backArrow.src = './img/build/back.png';
+                backArrow.alt = 'Back';
+                backArrow.id = 'backArrow';
+                backArrow.style.width = '48px';
+                backArrow.style.height = '48px';
+                backArrow.style.cursor = 'pointer';
+                backArrow.style.marginTop = '12px';
+                buildSection.appendChild(backArrow);
+    
+                backArrow.addEventListener('click', () => {
+                    showOriginalBuildSection();
+                });
+            }
+    
+            let placingBridge = false;
+            let bridgeElement = null;
+            let bridgePlacementDirection = null; 
+    
+            function startPlacingBridge() {
+                if (placingBridge) return;
+                placingBridge = true;
+                bridgePlacementDirection = null;
+    
+                bridgeElement = document.createElement('img');
+                bridgeElement.src = './img/build/bridge.png';
+                bridgeElement.alt = 'Bridge';
+                bridgeElement.style.position = 'absolute';
+                bridgeElement.style.pointerEvents = 'none';
+                bridgeElement.style.zIndex = '10000';
+    
+                bridgeElement.style.width = 192 + 'px'; 
+                bridgeElement.style.height = 64 + 'px';
+                document.body.appendChild(bridgeElement);
+    
+                document.addEventListener('mousemove', moveBridgeWithCursor);
+                document.addEventListener('contextmenu', placeBridgeOnClick);
+            }
+    
+            function moveBridgeWithCursor(e) {
+                if (!placingBridge || !bridgeElement) return;
+    
+
+                if (bridgePlacementDirection === 'vertical') {
+                    bridgeElement.style.width = 64 + 'px';
+                    bridgeElement.style.height = 192 + 'px';
+                    bridgeElement.style.left = e.pageX - 32 + 'px';
+                    bridgeElement.style.top = e.pageY - 96 + 'px'; 
+                } else {
+                    bridgeElement.style.width = 192 + 'px';
+                    bridgeElement.style.height = 64 + 'px';
+                    bridgeElement.style.left = e.pageX - 96 + 'px'; 
+                    bridgeElement.style.top = e.pageY - 32 + 'px';
+                }
+            }
+    
+            function placeBridgeOnClick(e) {
+                if (!placingBridge) return;
+                e.preventDefault();
+    
+                if (wood < 800 || gold < 250) {
+                    showTreeMessage("You need more ressources!");
+                    cancelPlacingBridge();
+                    return;
+                }
+    
+                const mapPlaceholder = document.getElementById('mapPlaceholder');
+                const rect = mapPlaceholder.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+    
+                const tileSize = 64;
+                const tileX = Math.floor(x / tileSize);
+                const tileY = Math.floor(y / tileSize);
+    
+                if (tileX < 0 || tileX >= 18 || tileY < 0 || tileY >= 20) {
+                    showTreeMessage("You can only place a bridge above water");
+                    cancelPlacingBridge();
+                    return;
+                }
+    
+        
+                let canPlaceHorizontal = true;
+                for (let i = 0; i < 3; i++) {
+                    if (map[tileY][tileX + i] !== 5) {
+                        canPlaceHorizontal = false;
+                        break;
+                    }
+                }
+    
+    
+                let canPlaceVertical = true;
+                if (tileY > 17) canPlaceVertical = false; 
+                else {
+                    for (let i = 0; i < 3; i++) {
+                        if (map[tileY + i][tileX] !== 5) {
+                            canPlaceVertical = false;
+                            break;
+                        }
+                    }
+                }
+    
+                if (!canPlaceHorizontal && !canPlaceVertical) {
+                    showTreeMessage("You can only place a bridge above water");
+                    cancelPlacingBridge();
+                    return;
+                }
+
+                if (canPlaceHorizontal) {
+                    bridgePlacementDirection = 'horizontal';
+                    for (let i = 0; i < 3; i++) {
+                        map[tileY][tileX + i] = 1000;
+                    }
+                } else if (canPlaceVertical) {
+                    bridgePlacementDirection = 'vertical';
+                    for (let i = 0; i < 3; i++) {
+                        map[tileY + i][tileX] = 1000;
+                    }
+                }
+    
+ 
+                wood -= 800;
+                gold -= 250;
+                updateResourceBar();
+    
+                drawMap();
+    
+                cancelPlacingBridge();
+            }
+    
+            function cancelPlacingBridge() {
+                placingBridge = false;
+                bridgePlacementDirection = null;
+                if (bridgeElement) {
+                    document.body.removeChild(bridgeElement);
+                    bridgeElement = null;
+                }
+                document.removeEventListener('mousemove', moveBridgeWithCursor);
+                document.removeEventListener('contextmenu', placeBridgeOnClick);
+            }
+    
+            function attachBuildIconClick() {
+                const buildIcon = buildSection.querySelector('#buildIcon');
+                if (buildIcon) {
+                    buildIcon.style.cursor = 'pointer';
+                    buildIcon.addEventListener('click', () => {
+                        showBuildingOptions();
+                    });
+                }
+            }
+    
+            attachBuildIconClick();
+        }
