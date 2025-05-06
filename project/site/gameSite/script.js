@@ -1,11 +1,17 @@
- 
 let gold = 1000;
 let wood = 250;
+let totalTiles = 0;
+
 function StartGame() {
     const params = GetQueryParams();
 
     delStart();
     
+
+    window.isMoving = false;
+    if (window.isMoving === false) {
+        
+    }
     function playWorkSound() {
         if (params.team == "human")  {
             humanWorkSound();
@@ -126,6 +132,35 @@ function StartGame() {
     
         const tileImages = {};
         let tilesLoaded = 0;
+        let orcSpritesLoaded = 0;
+
+        function checkAllSpritesLoaded() {
+            if (orcSpritesLoaded === 2 && tilesLoaded === totalTiles) {
+                drawMap();
+            }
+        }
+
+        if (!window.orcStandSprite) {
+            window.orcStandSprite = new Image();
+            window.orcStandSprite.onload = function() {
+                orcSpritesLoaded++;
+                checkAllSpritesLoaded();
+            };
+            window.orcStandSprite.src = './orc/Stand.png';
+        } else {
+            orcSpritesLoaded++;
+        }
+
+        if (!window.orcRunSprite) {
+            window.orcRunSprite = new Image();
+            window.orcRunSprite.onload = function() {
+                orcSpritesLoaded++;
+                checkAllSpritesLoaded();
+            };
+            window.orcRunSprite.src = './orc/Run.png';
+        } else {
+            orcSpritesLoaded++;
+        }
     
     
         const playerName = params.username;
@@ -319,32 +354,34 @@ function drawMap() {
                 if (!window.orcFrameInterval) window.orcFrameInterval = 75; 
                 if (!window.orcFacingLeft) window.orcFacingLeft = false;
                 if (typeof window.isMoving === 'undefined') window.isMoving = false;
-    
+
                 const now = Date.now();
                 if (!window.orcLastFrameTime) window.orcLastFrameTime = now;
                 if (now - window.orcLastFrameTime > window.orcFrameInterval) {
                     window.orcFrame = (window.orcFrame + 1) % window.orcFrameCount;
                     window.orcLastFrameTime = now;
                 }
-    
+
                 const drawX = player.animX * tileSize + tileSize / 2 - window.orcFrameWidth / 2;
                 const drawY = player.animY * tileSize + tileSize / 2 - window.orcFrameHeight / 2;
-    
+
                 ctx.save();
                 if (window.orcFacingLeft) {
                     ctx.translate(drawX + window.orcFrameWidth / 2, 0);
                     ctx.scale(-1, 1);
                     ctx.translate(-(drawX + window.orcFrameWidth / 2), 0);
                 }
-    
-                if (window.isMoving) {
+
+                if (!window.orcInitialStandDrawn) {
+                    ctx.drawImage(window.orcStandSprite, 0, 0, window.orcFrameWidth, window.orcFrameHeight, drawX, drawY, window.orcFrameWidth, window.orcFrameHeight);
+                    window.orcInitialStandDrawn = true;
+                } else {
                     const frameX = window.orcFrame * window.orcFrameWidth;
                     ctx.drawImage(window.orcRunSprite, frameX, 0, window.orcFrameWidth, window.orcFrameHeight, drawX, drawY, window.orcFrameWidth, window.orcFrameHeight);
-                } else {
-                    ctx.drawImage(window.orcStandSprite, 0, 0, window.orcFrameWidth, window.orcFrameHeight, drawX, drawY, window.orcFrameWidth, window.orcFrameHeight);
                 }
+
                 ctx.restore();
-    
+
                 const textWidth = ctx.measureText(playerName).width;
                 ctx.fillStyle = 'white';
                 ctx.strokeStyle = 'black';
@@ -454,7 +491,10 @@ function movePlayer(dx, dy) {
                 updateViewport();
                 drawMap();
                 checkIfPlayerDied();
-                window.isMoving = false;
+                setTimeout(() => {
+                    window.isMoving = false;
+                    drawMap();
+                }, 120); 
             }
         }
     
@@ -493,6 +533,7 @@ function animatePlayerMovement(targetTileX, targetTileY) {
                     moving = false;
                     window.isMoving = false;
                     checkIfPlayerDied();
+                    drawMap(); 
                     return;
                 }
                 const next = path[step];
@@ -674,35 +715,84 @@ function animatePlayerMovement(targetTileX, targetTileY) {
         }
     
         function loadTiles() {
-            const totalTiles = Object.keys(tileSources).length;
+            totalTiles = Object.keys(tileSources).length;
             for (const [id, src] of Object.entries(tileSources)) {
                 const img = new Image();
                 img.src = src;
                 img.onload = () => {
                     tileImages[id] = img;
                     tilesLoaded++;
-                    if (tilesLoaded === totalTiles) {
-                        drawMap();
-                    }
+                    checkAllSpritesLoaded();
                 };
                 img.onerror = () => console.error(`Fehler beim Laden von Bild: ${src}`);
             }
         }
     
         if (controlType === 'wasd') {
-            document.addEventListener('keydown', (e) => {
-                if (['w', 'a', 's', 'd'].includes(e.key.toLowerCase()) && isChoppingTree) {
-                    showTreeMessage("You're currently chopping a tree!");
-                    return;
-                }
-                if (['w', 'a', 's', 'd'].includes(e.key.toLowerCase())) {
-                    e.preventDefault();
-                    switch (e.key.toLowerCase()) {
-                        case 'w': movePlayer(0, -1); break;
-                        case 'a': movePlayer(-1, 0); break;
-                        case 's': movePlayer(0, 1); break;
-                        case 'd': movePlayer(1, 0); break;
+            let keysPressed = {};
+            let movementInterval = null;
+            let animationFrameId = null;
+
+            function startMovement() {
+                if (movementInterval) return;
+                movementInterval = setInterval(() => {
+                    if (isChoppingTree) {
+                        showTreeMessage("You're currently chopping a tree!");
+                        return;
                     }
+                    if (keysPressed['w']) movePlayer(0, -1);
+                    if (keysPressed['a']) movePlayer(-1, 0);
+                    if (keysPressed['s']) movePlayer(0, 1);
+                    if (keysPressed['d']) movePlayer(1, 0);
+                }, 120);
+                startAnimationLoop();
+            }
+
+            function stopMovement() {
+                if (movementInterval) {
+                    clearInterval(movementInterval);
+                    movementInterval = null;
+                }
+                window.isMoving = false;
+                cancelAnimationFrame(animationFrameId);
+                drawMap();
+            }
+
+            function animationLoop() {
+                drawMap();
+                animationFrameId = requestAnimationFrame(animationLoop);
+            }
+
+            function startAnimationLoop() {
+                if (!animationFrameId) {
+                    animationLoop();
+                }
+            }
+
+            document.addEventListener('keydown', (e) => {
+                const key = e.key.toLowerCase();
+                if (['w', 'a', 's', 'd'].includes(key)) {
+                    if (isChoppingTree) {
+                        showTreeMessage("You're currently chopping a tree!");
+                        return;
+                    }
+                    if (!keysPressed[key]) {
+                        keysPressed[key] = true;
+                        window.isMoving = true;
+                        startMovement();
+                    }
+                    e.preventDefault();
+                }
+            });
+
+            document.addEventListener('keyup', (e) => {
+                const key = e.key.toLowerCase();
+                if (['w', 'a', 's', 'd'].includes(key)) {
+                    keysPressed[key] = false;
+                    if (!keysPressed['w'] && !keysPressed['a'] && !keysPressed['s'] && !keysPressed['d']) {
+                        stopMovement();
+                    }
+                    e.preventDefault();
                 }
             });
         }
@@ -737,7 +827,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const mapPlaceholder = document.getElementById('mapPlaceholder');
             let playerElement = document.getElementById('character');
             if (params.team?.toLowerCase() === 'orc' && playerElement) {
-                // Hide the old character div since we use canvas sprite now for orc
                 playerElement.style.display = 'none';
             }
         });

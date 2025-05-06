@@ -103,7 +103,6 @@ body {
     z-index: 10; 
     pointer-events: none;
     background-size: cover;
-    /* Remove static background image for sprite animation */
     background-image: none; 
     width: 96px; 
     height: 96px; 
