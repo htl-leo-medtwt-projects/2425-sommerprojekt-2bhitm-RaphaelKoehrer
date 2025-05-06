@@ -1,4 +1,4 @@
-
+ 
 let gold = 1000;
 let wood = 250;
 function StartGame() {
@@ -269,7 +269,7 @@ function StartGame() {
             document.getElementById('buildingGoal').textContent = buildingGoal;
         }
     
-        function drawMap() {
+function drawMap() {
             const canvas = document.createElement('canvas');
             canvas.width = mapCols * tileSize;
             canvas.height = mapRows * tileSize;
@@ -285,21 +285,74 @@ function StartGame() {
                 }
             }
     
-            const px = player.animX * tileSize + tileSize / 2;
-            const py = player.animY * tileSize + tileSize / 2;
-            const textWidth = ctx.measureText(playerName).width;
+
+            if (params.team?.toLowerCase() === 'human') {
+                const px = player.animX * tileSize + tileSize / 2;
+                const py = player.animY * tileSize + tileSize / 2;
+                const textWidth = ctx.measureText(playerName).width;
     
-            ctx.fillStyle = params.team?.toLowerCase() === 'human' ? 'blue' : 'green';
-            ctx.beginPath();
-            ctx.arc(px, py, 10, 0, Math.PI * 2);
-            ctx.fill();
+                ctx.fillStyle = 'blue';
+                ctx.beginPath();
+                ctx.arc(px, py, 10, 0, Math.PI * 2);
+                ctx.fill();
     
-            ctx.fillStyle = 'white';
-            ctx.strokeStyle = 'black';
-            ctx.font = 'bold 14px sans-serif';
-            ctx.lineWidth = 2;
-            ctx.strokeText(playerName, px - textWidth / 2, py - tileSize / 2);
-            ctx.fillText(playerName, px - textWidth / 2, py - tileSize / 2);
+                ctx.fillStyle = 'white';
+                ctx.strokeStyle = 'black';
+                ctx.font = 'bold 14px sans-serif';
+                ctx.lineWidth = 2;
+                ctx.strokeText(playerName, px - textWidth / 2, py - tileSize / 2);
+                ctx.fillText(playerName, px - textWidth / 2, py - tileSize / 2);
+            } else {
+
+                if (!window.orcRunSprite) {
+                    window.orcRunSprite = new Image();
+                    window.orcRunSprite.src = './orc/Run.png';
+                }
+                if (!window.orcStandSprite) {
+                    window.orcStandSprite = new Image();
+                    window.orcStandSprite.src = './orc/Stand.png';
+                }
+                if (!window.orcFrame) window.orcFrame = 0;
+                if (!window.orcFrameCount) window.orcFrameCount = 6;
+                if (!window.orcFrameWidth) window.orcFrameWidth = 96; 
+                if (!window.orcFrameHeight) window.orcFrameHeight = 96;
+                if (!window.orcFrameInterval) window.orcFrameInterval = 75; 
+                if (!window.orcFacingLeft) window.orcFacingLeft = false;
+                if (typeof window.isMoving === 'undefined') window.isMoving = false;
+    
+                const now = Date.now();
+                if (!window.orcLastFrameTime) window.orcLastFrameTime = now;
+                if (now - window.orcLastFrameTime > window.orcFrameInterval) {
+                    window.orcFrame = (window.orcFrame + 1) % window.orcFrameCount;
+                    window.orcLastFrameTime = now;
+                }
+    
+                const drawX = player.animX * tileSize + tileSize / 2 - window.orcFrameWidth / 2;
+                const drawY = player.animY * tileSize + tileSize / 2 - window.orcFrameHeight / 2;
+    
+                ctx.save();
+                if (window.orcFacingLeft) {
+                    ctx.translate(drawX + window.orcFrameWidth / 2, 0);
+                    ctx.scale(-1, 1);
+                    ctx.translate(-(drawX + window.orcFrameWidth / 2), 0);
+                }
+    
+                if (window.isMoving) {
+                    const frameX = window.orcFrame * window.orcFrameWidth;
+                    ctx.drawImage(window.orcRunSprite, frameX, 0, window.orcFrameWidth, window.orcFrameHeight, drawX, drawY, window.orcFrameWidth, window.orcFrameHeight);
+                } else {
+                    ctx.drawImage(window.orcStandSprite, 0, 0, window.orcFrameWidth, window.orcFrameHeight, drawX, drawY, window.orcFrameWidth, window.orcFrameHeight);
+                }
+                ctx.restore();
+    
+                const textWidth = ctx.measureText(playerName).width;
+                ctx.fillStyle = 'white';
+                ctx.strokeStyle = 'black';
+                ctx.font = 'bold 14px sans-serif';
+                ctx.lineWidth = 2;
+                ctx.strokeText(playerName, drawX + window.orcFrameWidth / 2 - textWidth / 2, drawY - 10);
+                ctx.fillText(playerName, drawX + window.orcFrameWidth / 2 - textWidth / 2, drawY - 10);
+            }
     
             mapPlaceholder.innerHTML = '';
             mapPlaceholder.appendChild(canvas);
@@ -364,7 +417,7 @@ function StartGame() {
             minimapSection.appendChild(canvas);
         }
     
-        function movePlayer(dx, dy) {
+function movePlayer(dx, dy) {
             if (isChoppingTree) {
                 showTreeMessage("You're currently chopping a tree!");
                 return;
@@ -396,13 +449,16 @@ function StartGame() {
                 player.y = newY;
                 player.animX = newX;
                 player.animY = newY;
+                window.orcFacingLeft = dx < 0;
+                window.isMoving = true;
                 updateViewport();
                 drawMap();
                 checkIfPlayerDied();
+                window.isMoving = false;
             }
         }
     
-        function animatePlayerMovement(targetTileX, targetTileY) {
+function animatePlayerMovement(targetTileX, targetTileY) {
             if (moving || isChoppingTree) {
                 if (isChoppingTree) showTreeMessage("You're currently chopping a tree!");
                 return;
@@ -412,16 +468,30 @@ function StartGame() {
             let cx = player.x;
             let cy = player.y;
             while (cx !== targetTileX || cy !== targetTileY) {
-                if (cx < targetTileX) cx++;
-                else if (cx > targetTileX) cx--;
-                else if (cy < targetTileY) cy++;
-                else if (cy > targetTileY) cy--;
+                if (cx < targetTileX) {
+                    window.orcFacingLeft = false;
+                    window.isMoving = true;
+                    cx++;
+                } else if (cx > targetTileX) {
+                    window.orcFacingLeft = true;
+                    window.isMoving = true;
+                    cx--;
+                } else if (cy < targetTileY) {
+                    cx = cx; 
+                    cy++;
+                    window.isMoving = true;
+                } else if (cy > targetTileY) {
+                    cx = cx; 
+                    cy--;
+                    window.isMoving = true;
+                }
                 path.push({ x: cx, y: cy });
             }
             let step = 0;
             function moveStep() {
                 if (step >= path.length) {
                     moving = false;
+                    window.isMoving = false;
                     checkIfPlayerDied();
                     return;
                 }
@@ -436,6 +506,7 @@ function StartGame() {
                     updateViewport();
                     drawMap();
                     moving = false;
+                    window.isMoving = false;
                     return;
                 }
     
@@ -662,18 +733,13 @@ function StartGame() {
             }
         });
     
-        document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
             const mapPlaceholder = document.getElementById('mapPlaceholder');
             let playerElement = document.getElementById('character');
-            if (!playerElement) {
-                playerElement = document.createElement('div');
-                playerElement.id = 'character';
-                mapPlaceholder.appendChild(playerElement);
+            if (params.team?.toLowerCase() === 'orc' && playerElement) {
+                // Hide the old character div since we use canvas sprite now for orc
+                playerElement.style.display = 'none';
             }
-            function updatePlayerElementPosition(x, y) {
-                playerElement.style.transform = `translate(${x}px, ${y}px)`;
-            }
-            updatePlayerElementPosition(player.x * tileSize, player.y * tileSize);
         });
 }
 

@@ -103,9 +103,10 @@ body {
     z-index: 10; 
     pointer-events: none;
     background-size: cover;
-    background-image: url('./img/character.png'); 
-    width: 64px; 
-    height: 64px; 
+    /* Remove static background image for sprite animation */
+    background-image: none; 
+    width: 96px; 
+    height: 96px; 
     transition: transform 0.2s linear;
 }
 
