@@ -293,7 +293,7 @@ body {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: rgba(0, 0, 0, 0.85);
+    background-color: rgba(0, 0, 0, 0.925);
     color: white;
     display: none;
     justify-content: center;
@@ -304,13 +304,21 @@ body {
 }
 
 #gameOverScreen h1 {
-    font-size: 5rem;
+    font-size: 6.5rem;
     margin-bottom: 1rem;
 }
 
+#gameOverScreen h1::first-letter {
+    color: var(--yellow-color);
+}
+
 #gameOverScreen p {
-    font-size: 2rem;
+    font-size: 3rem;
     margin-bottom: 2rem;
+}
+
+#gameOverScreen p::first-letter {
+    color: var(--yellow-color);
 }
 
 #restartButton {
@@ -318,13 +326,101 @@ body {
     padding: 1rem 2rem;
     background-color: var(--yellow-color);
     border: none;
-    border-radius: 8px;
+    border-radius: 20px;
     cursor: pointer;
     color: black;
     font-weight: bold;
     transition: background-color 0.3s ease;
+    font-family: 'custom';
 }
 
 #restartButton:hover {
     background-color: #d4d43a;
+}
+
+#menuScreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.92);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 4000;
+}
+
+#menuContent {
+    background-image: url('./img/TutorialBackground.png');
+    border-radius: 16px;
+    padding: 72px 110px;
+    min-width: 520px;
+    box-shadow: 0 0 32px 16px #000c, 0 8px 32px 8px #222b;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 36px;
+}
+
+#menuContent h1 {
+    color: var(--yellow-color);
+    font-size: 4.5rem;
+    margin-bottom: 24px;
+}
+
+#menuContent h1::first-letter {
+    color: white;
+}
+
+#menuContent label {
+    color: var(--yellow-color);
+    font-size: 2.25rem;
+    margin-bottom: 12px;
+}
+
+#menuContent label::first-letter {
+    color: white;
+}
+
+#volumeSlider {
+    accent-color: var(--red-color);
+    width: 750px;
+}
+
+
+#volumeSlider:hover,
+#volumeSlider:focus,
+#volumeSlider:active {
+
+}
+
+#menuRestartButton, #closeMenuButton {
+    color: var(--yellow-color);
+    font-size: 1.8rem;
+    padding: 1.05rem 3rem;
+    background-image: url('./img/button_middle.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    min-width: 320px;
+    min-height: 64px;
+    margin-bottom: 12px;
+    transition: background-color 0.3s;
+    box-shadow: 0 8px 32px 0 #000c, 0 2px 8px 0 #222b;
+    font-family: 'custom';
+}
+
+#menuRestartButton::first-letter, #closeMenuButton::first-letter {
+    color: white;
+}
+
+#menuRestartButton:hover, #closeMenuButton:hover {
+    color: white;
+}
+#menuRestartButton:hover::first-letter, #closeMenuButton:hover::first-letter {
+    color: white;
 }

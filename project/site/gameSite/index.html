@@ -25,6 +25,8 @@
             <img src="./img/button_middle.png" alt="Menu Button">
             <p>MENU (M)</p>
         </div>
+
+
         <div id="minimapSection"></div>
 
         <div id="buildSection">
@@ -45,8 +47,20 @@
     <div id="gameOverScreen" style="display:none;">
         <div id="gameOverMessage">
             <h1>Game Over</h1>
-            <p>Du bist ins Wasser gefallen!</p>
-            <button id="restartButton">Neustarten</button>
+            <p>Du bist gestorben!</p>
+            <button id="restartButton">Zurück zum Hauptmenü</button>
+        </div>
+    </div>
+
+    <div id="menuScreen" style="display:none;">
+        <div id="menuContent">
+            <h1>Menü</h1>
+            <label for="volumeSlider">Lautstärke:</label>
+            <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1">
+            <br><br>
+            <button id="menuRestartButton">Zurück zum Hauptmenü</button>
+            <br><br>
+            <button id="closeMenuButton">Zurück zum Spiel</button>
         </div>
     </div>
 

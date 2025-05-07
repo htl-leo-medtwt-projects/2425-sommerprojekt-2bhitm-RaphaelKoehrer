@@ -932,16 +932,58 @@ document.addEventListener('DOMContentLoaded', () => {
             location.href = '../startseite/index.html';
         });
     }
+
+    // Menü-Button Logik
+    const menuButton = document.getElementById('menuButton');
+    const menuScreen = document.getElementById('menuScreen');
+    const closeMenuButton = document.getElementById('closeMenuButton');
+    const menuRestartButton = document.getElementById('menuRestartButton');
+    const volumeSlider = document.getElementById('volumeSlider');
+
+    if (menuButton && menuScreen) {
+        menuButton.addEventListener('click', () => {
+            menuScreen.style.display = 'flex';
+            menuScreen.style.justifyContent = 'center';
+            menuScreen.style.alignItems = 'center';
+        });
+    }
+    if (closeMenuButton && menuScreen) {
+        closeMenuButton.addEventListener('click', () => {
+            menuScreen.style.display = 'none';
+        });
+    }
+    if (menuRestartButton) {
+        menuRestartButton.addEventListener('click', () => {
+            location.href = '../startseite/index.html';
+        });
+    }
+    if (volumeSlider) {
+        volumeSlider.addEventListener('input', (e) => {
+            const value = parseFloat(e.target.value);
+            if (typeof Howler !== 'undefined') {
+                Howler.volume(value);
+            }
+        });
+    }
+
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key.toLowerCase() === 'm' && menuScreen) {
+            menuScreen.style.display = 'flex';
+            menuScreen.style.justifyContent = 'center';
+            menuScreen.style.alignItems = 'center';
+        }
+    });
 });
 
-        let countAudio = 1;
-        function changeAudio() {
-            if (countAudio % 2 === 0 ) {
-                document.getElementById('audioImg').src = '../sounds/audioImg.png';
-            }else {
-                document.getElementById('audioImg').src = '../sounds/mutedImg.png';
-            }
-           
-            MusicPlayer(countAudio);
-            countAudio++;
-        }
+let countAudio = 1;
+function changeAudio() {
+    if (countAudio % 2 === 0 ) {
+        document.getElementById('audioImg').src = '../sounds/audioImg.png';
+    }else {
+        document.getElementById('audioImg').src = '../sounds/mutedImg.png';
+    }
+   
+    MusicPlayer(countAudio);
+    countAudio++;
+}
