@@ -25,7 +25,7 @@ function StartGame() {
     startMusicOnce();
     
     const tileSize = 64;
-    const zoomFactor = 1.35;
+    const zoomFactor = 1.75;
     const mapCols = 20;
     const mapRows = 20;
     
@@ -133,9 +133,10 @@ function StartGame() {
         const tileImages = {};
         let tilesLoaded = 0;
         let orcSpritesLoaded = 0;
+        let humanSpritesLoaded = 0;
 
         function checkAllSpritesLoaded() {
-            if (orcSpritesLoaded === 2 && tilesLoaded === totalTiles) {
+            if (orcSpritesLoaded === 2 && humanSpritesLoaded === 2 && tilesLoaded === totalTiles) {
                 drawMap();
             }
         }
@@ -160,6 +161,24 @@ function StartGame() {
             window.orcRunSprite.src = './orc/Run.png';
         } else {
             orcSpritesLoaded++;
+        }
+
+        if (!window.humanStandSprite) {
+            window.humanStandSprite = new Image();
+            window.humanStandSprite.onload = function() {
+                humanSpritesLoaded++;
+                checkAllSpritesLoaded();
+            };
+            window.humanStandSprite.src = './human/Stand.png';
+        }
+
+        if (!window.humanRunSprite) {
+            window.humanRunSprite = new Image();
+            window.humanRunSprite.onload = function() {
+                humanSpritesLoaded++;
+                checkAllSpritesLoaded();
+            };
+            window.humanRunSprite.src = './human/Run.png';
         }
     
     
@@ -325,18 +344,59 @@ function drawMap() {
                 const px = player.animX * tileSize + tileSize / 2;
                 const py = player.animY * tileSize + tileSize / 2;
                 const textWidth = ctx.measureText(playerName).width;
-    
-                ctx.fillStyle = 'blue';
-                ctx.beginPath();
-                ctx.arc(px, py, 10, 0, Math.PI * 2);
-                ctx.fill();
-    
+
+                if (!window.humanRunSprite) {
+                    window.humanRunSprite = new Image();
+                    window.humanRunSprite.src = './human/Run.png';
+                }
+                if (!window.humanStandSprite) {
+                    window.humanStandSprite = new Image();
+                    window.humanStandSprite.src = './human/Stand.png';
+                }
+                if (!window.humanFrame) window.humanFrame = 0;
+                if (!window.humanFrameCount) window.humanFrameCount = 8;
+                if (!window.humanRunFrameWidth) window.humanRunFrameWidth = 224; 
+                if (!window.humanRunFrameHeight) window.humanRunFrameHeight = 152;
+                if (!window.humanStandFrameWidth) window.humanStandFrameWidth = 160;
+                if (!window.humanStandFrameHeight) window.humanStandFrameHeight = 160;
+                if (!window.humanFrameInterval) window.humanFrameInterval = 75; 
+                if (!window.humanFacingLeft) window.humanFacingLeft = false;
+                if (typeof window.isMoving === 'undefined') window.isMoving = false;
+
+                const now = Date.now();
+                if (!window.humanLastFrameTime) window.humanLastFrameTime = now;
+                if (now - window.humanLastFrameTime > window.humanFrameInterval) {
+                    window.humanFrame = (window.humanFrame + 1) % window.humanFrameCount;
+                    window.humanLastFrameTime = now;
+                }
+
+                const scale = 0.5;
+                const drawX = player.animX * tileSize + tileSize / 2 - (window.humanStandFrameWidth * scale) / 2;
+                const drawY = player.animY * tileSize + tileSize / 2 - (window.humanStandFrameHeight * scale) / 2;
+
+                ctx.save();
+                if (window.humanFacingLeft) {
+                    ctx.translate(drawX + (window.humanStandFrameWidth * scale) / 2, 0);
+                    ctx.scale(-1, 1);
+                    ctx.translate(-(drawX + (window.humanStandFrameWidth * scale) / 2), 0);
+                }
+
+                if (!window.humanInitialStandDrawn) {
+                    ctx.drawImage(window.humanStandSprite, 0, 0, window.humanStandFrameWidth, window.humanStandFrameHeight, drawX, drawY, window.humanStandFrameWidth * scale, window.humanStandFrameHeight * scale);
+                    window.humanInitialStandDrawn = true;
+                } else {
+                    const frameX = window.humanFrame * window.humanRunFrameWidth;
+                    ctx.drawImage(window.humanRunSprite, frameX, 0, window.humanRunFrameWidth, window.humanRunFrameHeight, drawX, drawY, window.humanRunFrameWidth * scale, window.humanRunFrameHeight * scale);
+                }
+
+                ctx.restore();
+
                 ctx.fillStyle = 'white';
                 ctx.strokeStyle = 'black';
                 ctx.font = 'bold 14px sans-serif';
                 ctx.lineWidth = 2;
-                ctx.strokeText(playerName, px - textWidth / 2, py - tileSize / 2);
-                ctx.fillText(playerName, px - textWidth / 2, py - tileSize / 2);
+                ctx.strokeText(playerName, drawX + (window.humanFrameWidth * scale) / 2 - textWidth / 2, drawY - 10);
+                ctx.fillText(playerName, drawX + (window.humanFrameWidth * scale) / 2 - textWidth / 2, drawY - 10);
             } else {
 
                 if (!window.orcRunSprite) {
@@ -486,7 +546,11 @@ function movePlayer(dx, dy) {
                 player.y = newY;
                 player.animX = newX;
                 player.animY = newY;
-                window.orcFacingLeft = dx < 0;
+                if (params.team?.toLowerCase() === 'human') {
+                    window.humanFacingLeft = dx < 0;
+                } else {
+                    window.orcFacingLeft = dx < 0;
+                }
                 window.isMoving = true;
                 updateViewport();
                 drawMap();
@@ -509,11 +573,19 @@ function animatePlayerMovement(targetTileX, targetTileY) {
             let cy = player.y;
             while (cx !== targetTileX || cy !== targetTileY) {
                 if (cx < targetTileX) {
-                    window.orcFacingLeft = false;
+                    if (params.team?.toLowerCase() === 'human') {
+                        window.humanFacingLeft = false;
+                    } else {
+                        window.orcFacingLeft = false;
+                    }
                     window.isMoving = true;
                     cx++;
                 } else if (cx > targetTileX) {
-                    window.orcFacingLeft = true;
+                    if (params.team?.toLowerCase() === 'human') {
+                        window.humanFacingLeft = true;
+                    } else {
+                        window.orcFacingLeft = true;
+                    }
                     window.isMoving = true;
                     cx--;
                 } else if (cy < targetTileY) {
@@ -829,6 +901,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (params.team?.toLowerCase() === 'orc' && playerElement) {
                 playerElement.style.display = 'none';
             }
+            if (params.team?.toLowerCase() === 'human') {
+                window.humanInitialStandDrawn = false;
+            }
+            drawMap();
         });
 }
 
