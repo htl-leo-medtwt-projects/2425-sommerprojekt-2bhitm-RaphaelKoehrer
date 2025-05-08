@@ -51,6 +51,8 @@
             backArrow.addEventListener('click', () => {
                 showOriginalBuildSection();
             });
+
+            attachBuildIconClick();
         }
 
         let placingBridge = false;
@@ -58,9 +60,13 @@
         let bridgePlacementDirection = null; 
 
         function startPlacingBridge() {
+            console.log("startPlacingBridge called, placingBridge:", placingBridge);
             if (placingBridge) return;
             placingBridge = true;
             bridgePlacementDirection = null;
+
+
+            showBridgePriceScreen();
 
             bridgeElement = document.createElement('img');
             bridgeElement.src = './img/build/bridge.png';
@@ -77,6 +83,54 @@
             document.addEventListener('contextmenu', placeBridgeOnClick);
         }
 
+        function cancelPlacingBridge() {
+            console.log("cancelPlacingBridge called");
+            placingBridge = false;
+            bridgePlacementDirection = null;
+            if (bridgeElement) {
+                document.body.removeChild(bridgeElement);
+                bridgeElement = null;
+            }
+            document.removeEventListener('mousemove', moveBridgeWithCursor);
+            document.removeEventListener('contextmenu', placeBridgeOnClick);
+
+            showBuildingOptions();
+        }
+
+        function showBridgePriceScreen() {
+            buildSection.innerHTML = '';
+
+            const bridge = buildings.find(b => b.alt === 'Bridge');
+            if (!bridge) {
+                console.log("Bridge building not found in buildings array");
+                return;
+            }
+
+            const priceDiv = document.createElement('div');
+            priceDiv.style.color = 'white';
+            priceDiv.style.fontFamily = "'custom'";
+            priceDiv.style.fontSize = '2rem';
+            priceDiv.style.padding = '20px';
+            priceDiv.style.textAlign = 'center';
+
+            const img = document.createElement('img');
+            img.src = bridge.src;
+            img.alt = bridge.alt;
+            img.style.width = '96px';
+            img.style.height = '32px';
+            img.style.display = 'block';
+            img.style.margin = '0 auto 20px auto';
+
+            buildSection.appendChild(img);
+
+            priceDiv.innerHTML = `
+                <p>Wood: ${bridge.wood}</p>
+                <p>Gold: ${bridge.gold}</p>
+            `;
+
+            buildSection.appendChild(priceDiv);
+        }
+
         function moveBridgeWithCursor(e) {
             if (!placingBridge || !bridgeElement) return;
 
@@ -84,7 +138,7 @@
                 bridgeElement.style.width = 64 + 'px';
                 bridgeElement.style.height = 192 + 'px';
                 bridgeElement.style.left = e.pageX - 32 + 'px';
-                bridgeElement.style.top = e.pageY - 96 + 'px'; 
+                bridgeElement.style.top = e.pageY - 32 + 'px'; 
             } else {
                 bridgeElement.style.width = 192 + 'px';
                 bridgeElement.style.height = 64 + 'px';
@@ -125,8 +179,8 @@
 
             const mapPlaceholder = document.getElementById('mapPlaceholder');
             const rect = mapPlaceholder.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+            const x = e.pageX - rect.left;
+            const y = e.pageY - rect.top;
 
             const tileSize = 64;
             const tileX = Math.floor(x / tileSize);
@@ -181,6 +235,9 @@
             }
             document.removeEventListener('mousemove', moveBridgeWithCursor);
             document.removeEventListener('contextmenu', placeBridgeOnClick);
+
+            // Restore buildSection menu after placing bridge
+            showBuildingOptions();
         }
 
         function attachBuildIconClick() {
