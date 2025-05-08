@@ -103,7 +103,7 @@
                 return;
             }
 
-            if (wood < 800 || gold < 250) {
+            if (window.wood < 800 || window.gold < 250) {
                 console.log("Not enough resources");
                 if (typeof showTreeMessage === 'function') {
                     showTreeMessage("Brücke kostet 250 Gold und 800 Holz");
@@ -138,16 +138,16 @@
             }
 
             if (window.map[tileY][tileX] === 5) {
-                if (tileX + 2 >= window.map[0].length) {
+                if (tileX - 1 < 0 || tileX + 1 >= window.map[0].length) {
                     console.log("Not enough space to place bridge horizontally");
                     if (typeof showTreeMessage === 'function') showTreeMessage("Nicht genug Platz für die Brücke");
                     cancelPlacingBridge();
                     return;
                 }
                 bridgePlacementDirection = 'horizontal';
-                window.map[tileY][tileX] = 221;
-                window.map[tileY][tileX + 1] = 222;
-                window.map[tileY][tileX + 2] = 223;
+                window.map[tileY][tileX - 1] = 221;
+                window.map[tileY][tileX] = 222;
+                window.map[tileY][tileX + 1] = 223;
             } else {
                 if (typeof showTreeMessage === 'function') showTreeMessage("Du kannst die Brücke nur über Wasser platzieren");
                 cancelPlacingBridge();
