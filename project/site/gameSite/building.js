@@ -96,10 +96,20 @@
             if (!placingBridge) return;
             e.preventDefault();
 
-            if (typeof wood === 'undefined' || typeof gold === 'undefined') return;
+            console.log("placeBridgeOnClick triggered");
+
+            if (typeof wood === 'undefined' || typeof gold === 'undefined') {
+                console.log("wood or gold undefined", wood, gold);
+                return;
+            }
 
             if (wood < 800 || gold < 250) {
-                if (typeof showTreeMessage === 'function') showTreeMessage("You need more ressources!");
+                console.log("Not enough resources");
+                if (typeof showTreeMessage === 'function') {
+                    showTreeMessage("Brücke kostet 250 Gold und 800 Holz");
+                } else {
+                    alert("Brücke kostet 250 Gold und 800 Holz");
+                }
                 cancelPlacingBridge();
                 return;
             }
@@ -113,47 +123,35 @@
             const tileX = Math.floor(x / tileSize);
             const tileY = Math.floor(y / tileSize);
 
-            if (tileX < 0 || tileX >= 18 || tileY < 0 || tileY >= 20) {
-                if (typeof showTreeMessage === 'function') showTreeMessage("You can only place a bridge above water");
+            console.log("Clicked tile:", tileX, tileY);
+
+            if (!window.map) {
+                console.log("window.map is undefined");
+                return;
+            }
+            console.log("Map dimensions:", window.map.length, window.map[0]?.length);
+
+            if (tileX < 0 || tileX >= window.map[0]?.length || tileY < 0 || tileY >= window.map.length) {
+                if (typeof showTreeMessage === 'function') showTreeMessage("Du kannst die Brücke nur über Wasser platzieren");
                 cancelPlacingBridge();
                 return;
             }
 
-            let canPlaceHorizontal = true;
-            for (let i = 0; i < 3; i++) {
-                if (window.map?.[tileY]?.[tileX + i] !== 5) {
-                    canPlaceHorizontal = false;
-                    break;
+            if (window.map[tileY][tileX] === 5) {
+                if (tileX + 2 >= window.map[0].length) {
+                    console.log("Not enough space to place bridge horizontally");
+                    if (typeof showTreeMessage === 'function') showTreeMessage("Nicht genug Platz für die Brücke");
+                    cancelPlacingBridge();
+                    return;
                 }
-            }
-
-            let canPlaceVertical = true;
-            if (tileY > 17) canPlaceVertical = false; 
-            else {
-                for (let i = 0; i < 3; i++) {
-                    if (window.map?.[tileY + i]?.[tileX] !== 5) {
-                        canPlaceVertical = false;
-                        break;
-                    }
-                }
-            }
-
-            if (!canPlaceHorizontal && !canPlaceVertical) {
-                if (typeof showTreeMessage === 'function') showTreeMessage("You can only place a bridge above water");
-                cancelPlacingBridge();
-                return;
-            }
-
-            if (canPlaceHorizontal) {
                 bridgePlacementDirection = 'horizontal';
-                for (let i = 0; i < 3; i++) {
-                    window.map[tileY][tileX + i] = 1000;
-                }
-            } else if (canPlaceVertical) {
-                bridgePlacementDirection = 'vertical';
-                for (let i = 0; i < 3; i++) {
-                    window.map[tileY + i][tileX] = 1000;
-                }
+                window.map[tileY][tileX] = 221;
+                window.map[tileY][tileX + 1] = 222;
+                window.map[tileY][tileX + 2] = 223;
+            } else {
+                if (typeof showTreeMessage === 'function') showTreeMessage("Du kannst die Brücke nur über Wasser platzieren");
+                cancelPlacingBridge();
+                return;
             }
 
             window.wood -= 800;
