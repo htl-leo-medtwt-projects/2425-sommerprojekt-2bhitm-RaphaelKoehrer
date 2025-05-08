@@ -7,6 +7,11 @@
     if (buildSection) {
         const originalContent = buildSection.innerHTML;
 
+
+        const buildings = [
+            { src: './img/build/bridge.png', alt: 'Bridge', name: 'Bridge', wood: 800, gold: 250 }
+        ];
+
         function showOriginalBuildSection() {
             buildSection.innerHTML = originalContent;
             attachBuildIconClick();
@@ -14,10 +19,6 @@
 
         function showBuildingOptions() {
             buildSection.innerHTML = '';
-
-            const buildings = [
-                { src: './img/build/bridge.png', alt: 'Bridge' }
-            ];
 
             buildings.forEach(building => {
                 const img = document.createElement('img');
@@ -103,12 +104,20 @@
                 return;
             }
 
-            if (window.wood < 800 || window.gold < 250) {
+  
+            const bridge = buildings.find(b => b.alt === 'Bridge');
+            if (!bridge) {
+                console.log("Bridge building not found in buildings array");
+                cancelPlacingBridge();
+                return;
+            }
+
+            if (window.wood < bridge.wood || window.gold < bridge.gold) {
                 console.log("Not enough resources");
                 if (typeof showTreeMessage === 'function') {
-                    showTreeMessage("Brücke kostet 250 Gold und 800 Holz");
+                    showTreeMessage(`Brücke kostet ${bridge.gold} Gold und ${bridge.wood} Holz`);
                 } else {
-                    alert("Brücke kostet 250 Gold und 800 Holz");
+                    alert(`Brücke kostet ${bridge.gold} Gold und ${bridge.wood} Holz`);
                 }
                 cancelPlacingBridge();
                 return;
@@ -154,8 +163,8 @@
                 return;
             }
 
-            window.wood -= 800;
-            window.gold -= 250;
+            window.wood -= bridge.wood;
+            window.gold -= bridge.gold;
             if (typeof updateResourceBar === 'function') updateResourceBar();
 
             if (typeof drawMap === 'function') drawMap();
