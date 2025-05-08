@@ -186,8 +186,15 @@
         function moveFarmOrcWithCursor(e) {
             if (!placingFarmOrc || !farmOrcElement) return;
 
-            farmOrcElement.style.left = (e.pageX - 96) + 'px';
-            farmOrcElement.style.top = (e.pageY - 96) + 'px';
+            const mapPlaceholder = document.getElementById('mapPlaceholder');
+            if (!mapPlaceholder) return;
+
+            const rect = mapPlaceholder.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            farmOrcElement.style.left = (x - 96) + 'px';
+            farmOrcElement.style.top = (y - 96) + 'px';
         }
 
         function startPlacingFarmOrc() {
@@ -204,7 +211,13 @@
             farmOrcElement.style.zIndex = '10000';
             farmOrcElement.style.width = '192px';
             farmOrcElement.style.height = '192px';
-            document.body.appendChild(farmOrcElement);
+
+            const mapPlaceholder = document.getElementById('mapPlaceholder');
+            if (mapPlaceholder) {
+                mapPlaceholder.appendChild(farmOrcElement);
+            } else {
+                document.body.appendChild(farmOrcElement);
+            }
 
             document.addEventListener('mousemove', moveFarmOrcWithCursor);
             document.addEventListener('contextmenu', placeFarmOrcOnClick);
@@ -293,8 +306,8 @@
 
             const mapPlaceholder = document.getElementById('mapPlaceholder');
             const rect = mapPlaceholder.getBoundingClientRect();
-            const x = e.pageX - rect.left;
-            const y = e.pageY - rect.top;
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
 
 
             if (window.wood < farm.wood || window.gold < farm.gold) {
@@ -324,22 +337,41 @@
                 return;
             }
 
+            // Do not modify map array; keep tiles intact
 
-            farmOrcElement.style.left = (x - 96) + 'px';
-            farmOrcElement.style.top = (y - 96) + 'px';
+            // Remove farm preview element
+            if (farmOrcElement && farmOrcElement.parentNode) {
+                farmOrcElement.parentNode.removeChild(farmOrcElement);
+                farmOrcElement = null;
+            }
 
+            // Add farm position to global placed farms array
+            if (!window.placedFarms) {
+                window.placedFarms = [];
+            }
+            window.placedFarms.push({ x: tileX, y: tileY });
 
+            // Deduct resources
             window.wood -= farm.wood;
             window.gold -= farm.gold;
             if (typeof updateResourceBar === 'function') updateResourceBar();
 
-            cancelPlacingFarmOrc();
+            // Remove event listeners
+            placingFarmOrc = false;
+            document.removeEventListener('mousemove', moveFarmOrcWithCursor);
+            document.removeEventListener('contextmenu', placeFarmOrcOnClick);
+
+            // Redraw map and render farms
+            if (typeof drawMap === 'function') drawMap();
+            if (typeof renderFarms === 'function') renderFarms();
         }
 
         function cancelPlacingFarmOrc() {
             placingFarmOrc = false;
             if (farmOrcElement) {
-                document.body.removeChild(farmOrcElement);
+                if (farmOrcElement.parentNode) {
+                    farmOrcElement.parentNode.removeChild(farmOrcElement);
+                }
                 farmOrcElement = null;
             }
             document.removeEventListener('mousemove', moveFarmOrcWithCursor);
@@ -359,6 +391,11 @@
         }
 
         function updateResourceDisplayLoop() {
+            if (typeof window.wood !== 'undefined' && typeof window.gold !== 'undefined') {
+                wood = window.wood;
+                gold = window.gold;
+            }
+
             if (typeof updateResourceBar === 'function') {
                 updateResourceBar();
             }
@@ -367,5 +404,29 @@
 
         attachBuildIconClick();
         updateResourceDisplayLoop();
+
+        // Render farms on map overlay
+        window.renderFarms = function() {
+            const mapPlaceholder = document.getElementById('mapPlaceholder');
+            if (!mapPlaceholder || !window.placedFarms) return;
+
+            // Remove existing farm overlays
+            const existingFarms = mapPlaceholder.querySelectorAll('.farmOverlay');
+            existingFarms.forEach(farm => farm.remove());
+
+            window.placedFarms.forEach(farmPos => {
+                const farmImg = document.createElement('img');
+                farmImg.src = './img/build/Farm_Orc.png';
+                farmImg.alt = 'Farm_Orc';
+                farmImg.classList.add('farmOverlay');
+                farmImg.style.position = 'absolute';
+                farmImg.style.width = '128px'; // Adjust size as needed
+                farmImg.style.height = '128px';
+                farmImg.style.left = (farmPos.x * 64) + 'px';
+                farmImg.style.top = (farmPos.y * 64) + 'px';
+                farmImg.style.pointerEvents = 'none';
+                mapPlaceholder.appendChild(farmImg);
+            });
+        };
     }
 })();
