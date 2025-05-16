@@ -53,9 +53,9 @@ function StartGame() {
             41: 'img/Trees/tree2/tree2_2.png',
             42: 'img/Trees/tree2/tree2_3.png',
             43: 'img/Trees/tree2/tree2_4.png',
-            221: 'img/Default/Bridge/BridgeLeft.png',
-            222: 'img/Default/Bridge/BridgeMiddle.png',
-            223: 'img/Default/Bridge/BridgeRight.png',
+            221: 'img/swamp/Bridge/BridgeLeft.png',
+            222: 'img/swamp/Bridge/BridgeMiddle.png',
+            223: 'img/swamp/Bridge/BridgeRight.png',
             999: 'img/mine.png',
             1000: './img/build/bridge.png',
         };
@@ -80,9 +80,9 @@ function StartGame() {
                 43: 'img/winter/Trees/tree2/tree2_4.png',
                 100: 'img/winter/Water/waterGrassLeft2.png',
                 101: 'img/winter/Water/waterGrassRight2.png',
-                221: 'img/winter/Bridge/BridgeLeft.png',
-                222: 'img/winter/Bridge/BridgeMiddle.png',
-                223: 'img/winter/Bridge/BridgeRight.png',
+                221: 'img/swamp/Bridge/BridgeLeft.png',
+                222: 'img/swamp/Bridge/BridgeMiddle.png',
+                223: 'img/swamp/Bridge/BridgeRight.png',
                 999: 'img/mine_winter.png',
                 1000: './img/build/bridge.png',
         };
@@ -135,9 +135,9 @@ function StartGame() {
             41: 'img/Trees/tree2/tree2_2.png',
             42: 'img/Trees/tree2/tree2_3.png',
             43: 'img/Trees/tree2/tree2_4.png',
-            221: 'img/Default/Bridge/BridgeLeft.png',
-            222: 'img/Default/Bridge/BridgeMiddle.png',
-            223: 'img/Default/Bridge/BridgeRight.png',
+            221: 'img/swamp/Bridge/BridgeLeft.png',
+            222: 'img/swamp/Bridge/BridgeMiddle.png',
+            223: 'img/swamp/Bridge/BridgeRight.png',
             999: 'img/mine.png',
             1000: './img/build/bridge.png',
         };
@@ -473,10 +473,6 @@ function drawMap() {
     
             if (controlType === 'click') {
                 canvas.onclick = handleCanvasClick;
-            }
-
-            if (typeof window.renderFarms === 'function') {
-                window.renderFarms();
             }
         }
         window.drawMap = drawMap;
