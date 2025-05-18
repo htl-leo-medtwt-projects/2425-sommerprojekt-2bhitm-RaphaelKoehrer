@@ -424,3 +424,46 @@ body {
 #menuRestartButton:hover::first-letter, #closeMenuButton:hover::first-letter {
     color: white;
 }
+
+#bridgeModal {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.7);
+    z-index: 5000;
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+.bridge-modal-content {
+    background: #222;
+    color: #fff;
+    padding: 48px 64px;
+    border-radius: 18px;
+    box-shadow: 0 0 32px #000a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+    font-size: 2rem;
+}
+
+.bridge-modal-content button {
+    font-size: 1.5rem;
+    margin: 0 16px;
+    padding: 0.5em 2em;
+    border-radius: 12px;
+    border: none;
+    background: var(--yellow-color);
+    color: #222;
+    font-family: 'custom';
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+
+.bridge-modal-content button:hover {
+    background: #fff200;
+}
