@@ -5,6 +5,15 @@ let totalTiles = 0;
 window.gold = gold;
 window.wood = wood;
 
+// Ressourcenanzeige immer aktuell halten
+setInterval(() => {
+    if (typeof window.gold !== 'undefined' && typeof window.wood !== 'undefined') {
+        gold = window.gold;
+        wood = window.wood;
+        if (typeof updateResourceBar === 'function') updateResourceBar();
+    }
+}, 200);
+
 function StartGame() {
     const params = GetQueryParams();
 
@@ -56,6 +65,7 @@ function StartGame() {
             221: 'img/swamp/Bridge/BridgeLeft.png',
             222: 'img/swamp/Bridge/BridgeMiddle.png',
             223: 'img/swamp/Bridge/BridgeRight.png',
+            500: 'img/swamp/Farm/Farm.png',
             999: 'img/mine.png',
             1000: './img/build/bridge.png',
         };
@@ -83,6 +93,7 @@ function StartGame() {
                 221: 'img/swamp/Bridge/BridgeLeft.png',
                 222: 'img/swamp/Bridge/BridgeMiddle.png',
                 223: 'img/swamp/Bridge/BridgeRight.png',
+                500: 'img/swamp/Farm/Farm.png',
                 999: 'img/mine_winter.png',
                 1000: './img/build/bridge.png',
         };
@@ -111,6 +122,7 @@ function StartGame() {
                 221: 'img/swamp/Bridge/BridgeLeft.png',
                 222: 'img/swamp/Bridge/BridgeMiddle.png',
                 223: 'img/swamp/Bridge/BridgeRight.png',
+                500: 'img/swamp/Farm/Farm.png',
                 999: 'img/mine.png',
                 1000: './img/build/bridge.png',
         };
@@ -138,6 +150,7 @@ function StartGame() {
             221: 'img/swamp/Bridge/BridgeLeft.png',
             222: 'img/swamp/Bridge/BridgeMiddle.png',
             223: 'img/swamp/Bridge/BridgeRight.png',
+            500: 'img/swamp/Farm/Farm.png',
             999: 'img/mine.png',
             1000: './img/build/bridge.png',
         };

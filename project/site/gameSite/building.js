@@ -7,12 +7,81 @@
 
 
         const buildings = [
-            { src: './img/build/bridge.png', alt: 'Bridge', name: 'Bridge', wood: 800, gold: 250 }
+            { src: './img/build/bridge.png', alt: 'Bridge', name: 'Bridge', wood: 800, gold: 250 },
+            { src: './img/build/Farm_Orc.png', alt: 'Farm', name: 'Farm', wood: 400, gold: 400 }
         ];
+
+        let draggingFarm = false;
+        let dragImg = null;
+        let farmDragActive = false;
 
         function showOriginalBuildSection() {
             buildSection.innerHTML = originalContent;
             attachBuildIconClick();
+        }
+
+        function startFarmDrag(building) {
+            if (farmDragActive) return;
+            farmDragActive = true;
+            dragImg = document.createElement('img');
+            dragImg.src = building.src;
+            dragImg.style.position = 'fixed';
+            dragImg.style.pointerEvents = 'none';
+            dragImg.style.width = '64px';
+            dragImg.style.height = '64px';
+            dragImg.style.zIndex = 9999;
+            document.body.appendChild(dragImg);
+            function moveAt(ev) {
+                dragImg.style.left = (ev.clientX - 32) + 'px';
+                dragImg.style.top = (ev.clientY - 32) + 'px';
+            }
+            function onMouseMove(ev) {
+                if (farmDragActive && dragImg) moveAt(ev);
+            }
+            document.addEventListener('mousemove', onMouseMove);
+            function onMapRightClick(ev) {
+                if (!farmDragActive) return;
+                ev.preventDefault();
+                const mapPlaceholder = document.getElementById('mapPlaceholder');
+                const rect = mapPlaceholder.getBoundingClientRect();
+                const x = ev.clientX - rect.left;
+                const y = ev.clientY - rect.top;
+                const tileSize = 64;
+                const tileX = Math.floor(x / tileSize);
+                const tileY = Math.floor(y / tileSize);
+                if (!window.map) return;
+                const map = window.map;
+                if (map[tileY] && (map[tileY][tileX] === 1 || map[tileY][tileX] === 2)) {
+                    const farm = buildings.find(b => b.alt === 'Farm');
+                    if (window.wood < farm.wood || window.gold < farm.gold) {
+                        if (typeof showTreeMessage === 'function') {
+                            showTreeMessage(`Farm kostet ${farm.gold} Gold und ${farm.wood} Holz`);
+                        } else {
+                            alert(`Farm kostet ${farm.gold} Gold und ${farm.wood} Holz`);
+                        }
+                        cleanup();
+                        return;
+                    }
+                    map[tileY][tileX] = 500;
+                    window.wood -= farm.wood;
+                    window.gold -= farm.gold;
+                    if (typeof updateResourceBar === 'function') updateResourceBar();
+                    if (typeof drawMap === 'function') drawMap();
+                } else {
+                    if (typeof showTreeMessage === 'function') showTreeMessage('Hier kann keine Farm gebaut werden!');
+                }
+                cleanup();
+            }
+            function cleanup() {
+                farmDragActive = false;
+                if (dragImg) {
+                    document.body.removeChild(dragImg);
+                    dragImg = null;
+                }
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('contextmenu', onMapRightClick, true);
+            }
+            document.addEventListener('contextmenu', onMapRightClick, true);
         }
 
         function showBridgeModal() {
@@ -95,6 +164,10 @@
                 if (building.alt === 'Bridge') {
                     img.addEventListener('click', () => {
                         showBridgeModal();
+                    });
+                } else if (building.alt === 'Farm') {
+                    img.addEventListener('click', (e) => {
+                        startFarmDrag(building);
                     });
                 }
             });
