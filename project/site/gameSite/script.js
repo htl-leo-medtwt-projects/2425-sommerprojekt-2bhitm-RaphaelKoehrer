@@ -24,6 +24,13 @@ setInterval(() => {
 // Spielstart und Map-Initialisierung
 function StartGame() {
     const params = GetQueryParams();
+    console.log("StartGame params:", params);
+
+    // WICHTIG: MapPlaceholder und MinimapSection direkt am Anfang initialisieren
+    const mapPlaceholder = document.getElementById('mapPlaceholder');
+    const minimapSection = document.getElementById('minimapSection');
+    // TileImages direkt am Anfang deklarieren
+    const tileImages = {};
 
     delStart();
 
@@ -265,8 +272,53 @@ function StartGame() {
         window.map = map;
     }
 
+   
+    let timerInterval;
+    let timeLeft = 0;
+    // Zeitlimit aus params.timeLimit statt params.time auslesen
+    if (params.timeLimit) {
+        // Extract number from timeLimit param, e.g. "10_min" -> 10
+        const timeMatch = params.timeLimit.match(/^(\d+)/);
+        if (timeMatch) {
+            timeLeft = parseInt(timeMatch[1]) * 60;
+        } else {
+            timeLeft = 0;
+        }
+    }
+
+    let timerDisplay = document.getElementById('timerDisplay');
+    if (!timerDisplay) {
+        timerDisplay = document.createElement('div');
+        timerDisplay.id = 'timerDisplay';
+        timerDisplay.style.fontSize = '2rem';
+        timerDisplay.style.color = 'white';
+        timerDisplay.style.textAlign = 'center';
+        timerDisplay.style.margin = '10px 0 0 0';
+        const mapContainer = document.getElementById('mapContainer');
+        mapContainer.parentNode.insertBefore(timerDisplay, mapContainer.nextSibling);
+    }
+    function updateTimerDisplay() {
+        const min = Math.floor(timeLeft / 60);
+        const sec = timeLeft % 60;
+        timerDisplay.textContent = `Verbleibende Zeit: ${min}:${sec.toString().padStart(2, '0')}`;
+    }
+    if (timeLeft > 0) {
+        updateTimerDisplay();
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            updateTimerDisplay();
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                if (window.buildings < window.buildingGoal) {
+                    showGameOverScreen();
+                }
+            }
+        }, 1000);
+    } else {
+        timerDisplay.textContent = "Verbleibende Zeit: 0:00";
+    }
+
     // Tile-Image-Preloading
-    const tileImages = {};
     let tilesLoaded = 0;
     let orcSpritesLoaded = 0;
     let humanSpritesLoaded = 0;
@@ -326,9 +378,6 @@ function StartGame() {
     let moving = false;
     let animationFrame;
     let isChoppingTree = false;
-
-    const mapPlaceholder = document.getElementById('mapPlaceholder');
-    const minimapSection = document.getElementById('minimapSection');
 
     // Ressourcenbar-Setup
     const resourceBar = document.createElement('div');
@@ -951,7 +1000,6 @@ function StartGame() {
 
     // Initiales Map-Rendering nach DOMContentLoaded
     document.addEventListener('DOMContentLoaded', () => {
-        const mapPlaceholder = document.getElementById('mapPlaceholder');
         let playerElement = document.getElementById('character');
         if (params.team?.toLowerCase() === 'orc' && playerElement) {
             playerElement.style.display = 'none';

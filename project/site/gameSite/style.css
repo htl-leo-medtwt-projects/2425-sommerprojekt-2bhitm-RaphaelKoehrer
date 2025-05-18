@@ -519,3 +519,20 @@ body {
 #restartWinButton:hover {
     background-color: #d4d43a;
 }
+
+#timerDisplay {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 200px;
+    min-height: 30px;
+    padding: 5px 10px;
+    background-color: rgba(0,0,0,0.5);
+    border-radius: 8px;
+    color: white;
+    font-size: 2rem;
+    text-align: center;
+    user-select: none;
+    font-family: 'custom';
+}
