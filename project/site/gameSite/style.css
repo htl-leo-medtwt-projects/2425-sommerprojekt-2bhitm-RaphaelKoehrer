@@ -467,3 +467,55 @@ body {
 .bridge-modal-content button:hover {
     background: #fff200;
 }
+
+
+#youWonScreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.925);
+    color: white;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 3000;
+    flex-direction: column;
+    text-align: center;
+}
+
+#youWonScreen h1 {
+    font-size: 6.5rem;
+    margin-bottom: 1rem;
+}
+
+#youWonScreen h1::first-letter {
+    color: var(--yellow-color);
+}
+
+#youWonScreen p {
+    font-size: 3rem;
+    margin-bottom: 2rem;
+}
+
+#youWonScreen p::first-letter {
+    color: var(--yellow-color);
+}
+
+#restartWinButton {
+    font-size: 1.5rem;
+    padding: 1rem 2rem;
+    background-color: var(--yellow-color);
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    color: black;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+    font-family: 'custom';
+}
+
+#restartWinButton:hover {
+    background-color: #d4d43a;
+}

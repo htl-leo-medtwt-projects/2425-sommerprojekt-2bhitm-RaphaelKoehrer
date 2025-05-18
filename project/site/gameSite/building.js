@@ -11,77 +11,9 @@
             { src: './img/build/Farm_Orc.png', alt: 'Farm', name: 'Farm', wood: 400, gold: 400 }
         ];
 
-        let draggingFarm = false;
-        let dragImg = null;
-        let farmDragActive = false;
-
         function showOriginalBuildSection() {
             buildSection.innerHTML = originalContent;
             attachBuildIconClick();
-        }
-
-        function startFarmDrag(building) {
-            if (farmDragActive) return;
-            farmDragActive = true;
-            dragImg = document.createElement('img');
-            dragImg.src = building.src;
-            dragImg.style.position = 'fixed';
-            dragImg.style.pointerEvents = 'none';
-            dragImg.style.width = '64px';
-            dragImg.style.height = '64px';
-            dragImg.style.zIndex = 9999;
-            document.body.appendChild(dragImg);
-            function moveAt(ev) {
-                dragImg.style.left = (ev.clientX - 32) + 'px';
-                dragImg.style.top = (ev.clientY - 32) + 'px';
-            }
-            function onMouseMove(ev) {
-                if (farmDragActive && dragImg) moveAt(ev);
-            }
-            document.addEventListener('mousemove', onMouseMove);
-            function onMapRightClick(ev) {
-                if (!farmDragActive) return;
-                ev.preventDefault();
-                const mapPlaceholder = document.getElementById('mapPlaceholder');
-                const rect = mapPlaceholder.getBoundingClientRect();
-                const x = ev.clientX - rect.left;
-                const y = ev.clientY - rect.top;
-                const tileSize = 64;
-                const tileX = Math.floor(x / tileSize);
-                const tileY = Math.floor(y / tileSize);
-                if (!window.map) return;
-                const map = window.map;
-                if (map[tileY] && (map[tileY][tileX] === 1 || map[tileY][tileX] === 2)) {
-                    const farm = buildings.find(b => b.alt === 'Farm');
-                    if (window.wood < farm.wood || window.gold < farm.gold) {
-                        if (typeof showTreeMessage === 'function') {
-                            showTreeMessage(`Farm kostet ${farm.gold} Gold und ${farm.wood} Holz`);
-                        } else {
-                            alert(`Farm kostet ${farm.gold} Gold und ${farm.wood} Holz`);
-                        }
-                        cleanup();
-                        return;
-                    }
-                    map[tileY][tileX] = 500;
-                    window.wood -= farm.wood;
-                    window.gold -= farm.gold;
-                    if (typeof updateResourceBar === 'function') updateResourceBar();
-                    if (typeof drawMap === 'function') drawMap();
-                } else {
-                    if (typeof showTreeMessage === 'function') showTreeMessage('Hier kann keine Farm gebaut werden!');
-                }
-                cleanup();
-            }
-            function cleanup() {
-                farmDragActive = false;
-                if (dragImg) {
-                    document.body.removeChild(dragImg);
-                    dragImg = null;
-                }
-                document.removeEventListener('mousemove', onMouseMove);
-                document.removeEventListener('contextmenu', onMapRightClick, true);
-            }
-            document.addEventListener('contextmenu', onMapRightClick, true);
         }
 
         function showBridgeModal() {
@@ -92,9 +24,14 @@
                 modal.style.display = 'none';
                 document.body.appendChild(modal);
             }
+            const bridge = buildings.find(b => b.alt === 'Bridge');
             modal.innerHTML = `
                 <div class="bridge-modal-content">
-                    <p>Do you want to build a Bridge?</p>
+                    <p style="font-size:2rem;">Do you want to build a Bridge?</p>
+                    <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 18px;">
+                        <span style='font-size:2rem; color:gold; margin-bottom: 6px;'>${bridge.gold} Gold</span>
+                        <span style='font-size:2rem; color:green;'>${bridge.wood} Holz</span>
+                    </div>
                     <button id="bridgeYesBtn">Yes</button>
                     <button id="bridgeNoBtn">No</button>
                 </div>
@@ -145,8 +82,87 @@
             map[spot.y][spot.x+1] = 223;
             window.wood -= bridge.wood;
             window.gold -= bridge.gold;
+            if (typeof window.buildings !== 'undefined') { window.buildings++; }
             if (typeof updateResourceBar === 'function') updateResourceBar();
             if (typeof drawMap === 'function') drawMap();
+            // Ressourcenanzeige updaten
+            if (document.getElementById('buildingValue')) {
+                document.getElementById('buildingValue').textContent = window.buildings;
+            }
+            if (typeof window.buildings !== 'undefined' && typeof window.buildingGoal !== 'undefined' && window.buildings == window.buildingGoal) {
+                if (typeof showYouWonScreen === 'function') showYouWonScreen();
+            }
+        }
+
+        function showFarmModal() {
+            let modal = document.getElementById('bridgeModal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'bridgeModal';
+                modal.style.display = 'none';
+                document.body.appendChild(modal);
+            }
+            const farm = buildings.find(b => b.alt === 'Farm');
+            modal.innerHTML = `
+                <div class="bridge-modal-content">
+                    <p style="font-size:2rem;">Willst du eine Farm bauen?</p>
+                    <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 18px;">
+                        <span style='font-size:2rem; color:gold; margin-bottom: 6px;'>${farm.gold} Gold</span>
+                        <span style='font-size:2rem; color:green;'>${farm.wood} Holz</span>
+                    </div>
+                    <button id="farmYesBtn">Ja</button>
+                    <button id="farmNoBtn">Nein</button>
+                </div>
+            `;
+            modal.style.display = 'flex';
+            document.getElementById('farmYesBtn').onclick = () => {
+                placeFarmRandomly();
+                modal.style.display = 'none';
+            };
+            document.getElementById('farmNoBtn').onclick = () => {
+                modal.style.display = 'none';
+            };
+        }
+
+        function placeFarmRandomly() {
+            const farm = buildings.find(b => b.alt === 'Farm');
+            if (!farm) return;
+            if (window.wood < farm.wood || window.gold < farm.gold) {
+                if (typeof showTreeMessage === 'function') {
+                    showTreeMessage(`Farm kostet ${farm.gold} Gold und ${farm.wood} Holz`);
+                } else {
+                    alert(`Farm kostet ${farm.gold} Gold und ${farm.wood} Holz`);
+                }
+                return;
+            }
+            if (!window.map) return;
+            const map = window.map;
+            const possibleSpots = [];
+            for (let y = 0; y < map.length; y++) {
+                for (let x = 0; x < map[0].length; x++) {
+                    if (map[y][x] === 1 || map[y][x] === 2) {
+                        possibleSpots.push({x, y});
+                    }
+                }
+            }
+            if (possibleSpots.length === 0) {
+                if (typeof showTreeMessage === 'function') showTreeMessage('Kein Platz für Farm gefunden!');
+                return;
+            }
+            const spot = possibleSpots[Math.floor(Math.random() * possibleSpots.length)];
+            map[spot.y][spot.x] = 500;
+            window.wood -= farm.wood;
+            window.gold -= farm.gold;
+            if (typeof window.buildings !== 'undefined') { window.buildings++; }
+            if (typeof updateResourceBar === 'function') updateResourceBar();
+            if (typeof drawMap === 'function') drawMap();
+            // Ressourcenanzeige updaten
+            if (document.getElementById('buildingValue')) {
+                document.getElementById('buildingValue').textContent = window.buildings;
+            }
+            if (typeof window.buildings !== 'undefined' && typeof window.buildingGoal !== 'undefined' && window.buildings == window.buildingGoal) {
+                if (typeof showYouWonScreen === 'function') showYouWonScreen();
+            }
         }
 
         function showBuildingOptions() {
@@ -166,8 +182,8 @@
                         showBridgeModal();
                     });
                 } else if (building.alt === 'Farm') {
-                    img.addEventListener('click', (e) => {
-                        startFarmDrag(building);
+                    img.addEventListener('click', () => {
+                        showFarmModal();
                     });
                 }
             });
