@@ -8,8 +8,37 @@
 
         const buildings = [
             { src: './img/build/bridge.png', alt: 'Bridge', name: 'Bridge', wood: 800, gold: 250 },
-            { src: './img/build/Farm_Orc.png', alt: 'Farm', name: 'Farm', wood: 400, gold: 400 }
+            { src: './img/build/Farm_Orc.png', alt: 'Farm', name: 'Farm', wood: 400, gold: 400 },
+            { src: './img/build/Tower.png', alt: 'Tower', name: 'Tower', wood: 0, gold: 1000, requires: { farm: 1, bridge: 1 } }
         ];
+
+        // Hilfsfunktion für Bau-Meldungen wie beim Baumfällen
+        function showBuildMessage(message) {
+            if (typeof showTreeMessage === 'function') {
+                showTreeMessage(message);
+                return;
+            }
+            // Fallback falls showTreeMessage nicht existiert
+            const msg = document.createElement('div');
+            msg.textContent = message;
+            msg.style.position = 'absolute';
+            msg.style.left = '50%';
+            msg.style.top = '30%';
+            msg.style.transform = 'translate(-50%, 0)';
+            msg.style.color = 'darkgray';
+            msg.style.fontSize = '32px'; 
+            msg.style.letterSpacing = '2px';
+            msg.style.fontWeight = 'bold';
+            msg.style.textShadow = '1px 1px 2px black';
+            msg.style.transition = 'transform 2.5s, opacity 2.5s'; 
+            msg.style.opacity = '1';
+            document.body.appendChild(msg);
+            setTimeout(() => {
+                msg.style.transform = 'translate(-50%, -60px)';
+                msg.style.opacity = '0';
+                setTimeout(() => msg.remove(), 2500);
+            }, 0);
+        }
 
         function showOriginalBuildSection() {
             buildSection.innerHTML = originalContent;
@@ -50,11 +79,7 @@
             const bridge = buildings.find(b => b.alt === 'Bridge');
             if (!bridge) return;
             if (window.wood < bridge.wood || window.gold < bridge.gold) {
-                if (typeof showTreeMessage === 'function') {
-                    showTreeMessage(`Brücke kostet ${bridge.gold} Gold und ${bridge.wood} Holz`);
-                } else {
-                    alert(`Brücke kostet ${bridge.gold} Gold und ${bridge.wood} Holz`);
-                }
+                showBuildMessage(`Brücke kostet ${bridge.gold} Gold und ${bridge.wood} Holz`);
                 return;
             }
             if (!window.map) return;
@@ -73,7 +98,7 @@
                 }
             }
             if (possibleSpots.length === 0) {
-                if (typeof showTreeMessage === 'function') showTreeMessage('Kein Platz für Brücke gefunden!');
+                showBuildMessage('Kein Platz für Brücke gefunden!');
                 return;
             }
             const spot = possibleSpots[Math.floor(Math.random() * possibleSpots.length)];
@@ -128,11 +153,7 @@
             const farm = buildings.find(b => b.alt === 'Farm');
             if (!farm) return;
             if (window.wood < farm.wood || window.gold < farm.gold) {
-                if (typeof showTreeMessage === 'function') {
-                    showTreeMessage(`Farm kostet ${farm.gold} Gold und ${farm.wood} Holz`);
-                } else {
-                    alert(`Farm kostet ${farm.gold} Gold und ${farm.wood} Holz`);
-                }
+                showBuildMessage(`Farm kostet ${farm.gold} Gold und ${farm.wood} Holz`);
                 return;
             }
             if (!window.map) return;
@@ -146,7 +167,7 @@
                 }
             }
             if (possibleSpots.length === 0) {
-                if (typeof showTreeMessage === 'function') showTreeMessage('Kein Platz für Farm gefunden!');
+                showBuildMessage('Kein Platz für Farm gefunden!');
                 return;
             }
             const spot = possibleSpots[Math.floor(Math.random() * possibleSpots.length)];
@@ -157,6 +178,79 @@
             if (typeof updateResourceBar === 'function') updateResourceBar();
             if (typeof drawMap === 'function') drawMap();
             // Ressourcenanzeige updaten
+            if (document.getElementById('buildingValue')) {
+                document.getElementById('buildingValue').textContent = window.buildings;
+            }
+            if (typeof window.buildings !== 'undefined' && typeof window.buildingGoal !== 'undefined' && window.buildings == window.buildingGoal) {
+                if (typeof showYouWonScreen === 'function') showYouWonScreen();
+            }
+        }
+
+        function showTowerModal() {
+            let modal = document.getElementById('bridgeModal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'bridgeModal';
+                modal.style.display = 'none';
+                document.body.appendChild(modal);
+            }
+            const tower = buildings.find(b => b.alt === 'Tower');
+            modal.innerHTML = `
+                <div class="bridge-modal-content">
+                    <p style="font-size:2rem;">Willst du einen Tower bauen?</p>
+                    <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 18px;">
+                        <span style='font-size:2rem; color:gold; margin-bottom: 6px;'>${tower.gold} Gold</span>
+                        <span style='font-size:2rem; color:green;'>${tower.wood} Holz</span>
+                    </div>
+                    <button id="towerYesBtn">Ja</button>
+                    <button id="towerNoBtn">Nein</button>
+                </div>
+            `;
+            modal.style.display = 'flex';
+            document.getElementById('towerYesBtn').onclick = () => {
+                placeTowerRandomly();
+                modal.style.display = 'none';
+            };
+            document.getElementById('towerNoBtn').onclick = () => {
+                modal.style.display = 'none';
+            };
+        }
+
+        function placeTowerRandomly() {
+            const tower = buildings.find(b => b.alt === 'Tower');
+            if (!tower) return;
+            // Prüfe Voraussetzungen
+            if (tower.requires) {
+                if (!window.missionProgress || window.missionProgress.farm < tower.requires.farm || window.missionProgress.bridge < tower.requires.bridge) {
+                    showBuildMessage('Du brauchst mindestens 1 Farm und 1 Brücke für einen Tower!');
+                    return;
+                }
+            }
+            if (window.wood < tower.wood || window.gold < tower.gold) {
+                showBuildMessage(`Tower kostet ${tower.gold} Gold und ${tower.wood} Holz`);
+                return;
+            }
+            if (!window.map) return;
+            const map = window.map;
+            const possibleSpots = [];
+            for (let y = 0; y < map.length; y++) {
+                for (let x = 0; x < map[0].length; x++) {
+                    if (map[y][x] === 1 || map[y][x] === 2) {
+                        possibleSpots.push({x, y});
+                    }
+                }
+            }
+            if (possibleSpots.length === 0) {
+                showBuildMessage('Kein Platz für Tower gefunden!');
+                return;
+            }
+            const spot = possibleSpots[Math.floor(Math.random() * possibleSpots.length)];
+            map[spot.y][spot.x] = 501;
+            window.wood -= tower.wood;
+            window.gold -= tower.gold;
+            if (typeof window.buildings !== 'undefined') { window.buildings++; }
+            if (typeof updateResourceBar === 'function') updateResourceBar();
+            if (typeof drawMap === 'function') drawMap();
             if (document.getElementById('buildingValue')) {
                 document.getElementById('buildingValue').textContent = window.buildings;
             }
@@ -184,6 +278,10 @@
                 } else if (building.alt === 'Farm') {
                     img.addEventListener('click', () => {
                         showFarmModal();
+                    });
+                } else if (building.alt === 'Tower') {
+                    img.addEventListener('click', () => {
+                        showTowerModal();
                     });
                 }
             });

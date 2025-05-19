@@ -80,7 +80,8 @@ function StartGame() {
             221: 'img/swamp/Bridge/BridgeLeft.png',
             222: 'img/swamp/Bridge/BridgeMiddle.png',
             223: 'img/swamp/Bridge/BridgeRight.png',
-            500: 'img/swamp/Farm/Farm.png',
+            500: 'img/Farm.png',
+            501: 'img/Tower.png',
             999: 'img/mine.png',
             1000: './img/build/bridge.png',
         };
@@ -105,10 +106,11 @@ function StartGame() {
                 43: 'img/winter/Trees/tree2/tree2_4.png',
                 100: 'img/winter/Water/waterGrassLeft2.png',
                 101: 'img/winter/Water/waterGrassRight2.png',
-                221: 'img/swamp/Bridge/BridgeLeft.png',
-                222: 'img/swamp/Bridge/BridgeMiddle.png',
-                223: 'img/swamp/Bridge/BridgeRight.png',
-                500: 'img/swamp/Farm/Farm.png',
+                221: 'img/winter/Bridge/BridgeLeft.png',
+                222: 'img/winter/Bridge/BridgeMiddle.png',
+                223: 'img/winter/Bridge/BridgeRight.png',
+                500: 'img/winter/Farm/Farm.png',
+                501: 'img/winter/Tower/Tower.png',
                 999: 'img/mine_winter.png',
                 1000: './img/build/bridge.png',
         };
@@ -138,6 +140,7 @@ function StartGame() {
                 222: 'img/swamp/Bridge/BridgeMiddle.png',
                 223: 'img/swamp/Bridge/BridgeRight.png',
                 500: 'img/swamp/Farm/Farm.png',
+                501: 'img/swamp/Tower/Tower.png',
                 999: 'img/mine.png',
                 1000: './img/build/bridge.png',
         };
@@ -162,16 +165,65 @@ function StartGame() {
             41: 'img/Trees/tree2/tree2_2.png',
             42: 'img/Trees/tree2/tree2_3.png',
             43: 'img/Trees/tree2/tree2_4.png',
-            221: 'img/swamp/Bridge/BridgeLeft.png',
-            222: 'img/swamp/Bridge/BridgeMiddle.png',
-            223: 'img/swamp/Bridge/BridgeRight.png',
-            500: 'img/swamp/Farm/Farm.png',
+            221: 'img/Default/Bridge/BridgeLeft.png',
+            222: 'img/Default/Bridge/BridgeMiddle.png',
+            223: 'img/Default/Bridge/BridgeRight.png',
+            500: 'img/Farm.png',
+            501: 'img/Tower.png',
             999: 'img/mine.png',
             1000: './img/build/bridge.png',
         };
         
         loadTiles();
     }
+
+    function setupMissionDisplay() {
+        let missionDisplay = document.getElementById('missionDisplay');
+        if (!missionDisplay) {
+            missionDisplay = document.createElement('div');
+            missionDisplay.id = 'missionDisplay';
+            missionDisplay.style.position = 'absolute';
+            missionDisplay.style.left = '75%';
+            missionDisplay.style.top = '12%';
+            missionDisplay.style.width = 'fit-content';
+            missionDisplay.style.minHeight = 'fit-content';
+            missionDisplay.style.background = 'rgba(0,0,0,0.6)';
+            missionDisplay.style.color = 'white';
+            missionDisplay.style.fontSize = '1.5rem';
+            missionDisplay.style.padding = '18px 18px 18px 24px';
+            missionDisplay.style.borderRadius = '12px';
+            missionDisplay.style.zIndex = '1001';
+            missionDisplay.style.display = 'flex';
+            missionDisplay.style.flexDirection = 'column';
+            missionDisplay.style.justifyContent = 'flex-start';
+            missionDisplay.style.alignItems = 'flex-start';
+            document.body.appendChild(missionDisplay);
+        }
+        // Missionslogik
+        let missionText = '';
+        let missionGoals = {};
+        if (params.mission === 'none') {
+            missionText = '<b>No Mission</b>';
+        } else if (params.mission === 'mission1') {
+            missionText = '<b>Mission 1</b><ul style="margin-top:8px;">'
+                + '<li id="missionFarm">Baue 3 Farmen</li>'
+                + '<li id="missionBridge">Baue 2 Brücken</li>'
+                + '</ul>';
+            missionGoals = { farm: 3, bridge: 2 };
+        } else if (params.mission === 'mission2') {
+            missionText = '<b>Mission 2</b><ul style="margin-top:8px;">'
+                + '<li id="missionFarm">Baue 5 Farmen</li>'
+                + '<li id="missionBridge">Baue 1 Brücke</li>'
+                + '</ul>';
+            missionGoals = { farm: 5, bridge: 1 };
+        } else {
+            missionText = '';
+        }
+        missionDisplay.innerHTML = missionText;
+        window.missionGoals = missionGoals;
+        window.missionProgress = { farm: 0, bridge: 0 };
+    }
+    setupMissionDisplay();
 
     // Map-Definitionen und TileSources
     if (params.map == "map2") {
@@ -277,7 +329,6 @@ function StartGame() {
     let timeLeft = 0;
     // Zeitlimit aus params.timeLimit statt params.time auslesen
     if (params.timeLimit) {
-        // Extract number from timeLimit param, e.g. "10_min" -> 10
         const timeMatch = params.timeLimit.match(/^(\d+)/);
         if (timeMatch) {
             timeLeft = parseInt(timeMatch[1]) * 60;
@@ -398,6 +449,12 @@ function StartGame() {
     let buildingGoal = parseInt(params.goal) || 5;
     window.buildings = buildings;
     window.buildingGoal = buildingGoal;
+    // Mission-Progress ggf. überschreiben
+    if (params.mission === 'mission1') {
+        window.buildingGoal = 5; // 3 Farmen + 2 Brücken
+    } else if (params.mission === 'mission2') {
+        window.buildingGoal = 6; // 5 Farmen + 1 Brücke
+    }
 
     document.getElementById('goldValue').textContent = gold;
     document.getElementById('woodValue').textContent = wood;
@@ -814,20 +871,20 @@ function StartGame() {
         msg.style.position = 'absolute';
         msg.style.left = `${player.x * tileSize + tileSize / 2}px`;
         msg.style.top = `${player.y * tileSize - tileSize / 2}px`;
-        msg.style.color = 'white';
-        msg.style.fontSize = '20px';
+        msg.style.color = 'darkgray';
+        msg.style.fontSize = '32px'; 
         msg.style.letterSpacing = '2px';
         msg.style.fontWeight = 'bold';
         msg.style.textShadow = '1px 1px 2px black';
-        msg.style.transition = 'transform 2s, opacity 2s';
+        msg.style.transition = 'transform 2.5s, opacity 2.5s'; 
         msg.style.transform = 'translateY(0)';
         msg.style.opacity = '1';
         mapPlaceholder.appendChild(msg);
 
         setTimeout(() => {
-            msg.style.transform = 'translateY(-50px)';
+            msg.style.transform = 'translateY(-60px)';
             msg.style.opacity = '0';
-            setTimeout(() => msg.remove(), 2000);
+            setTimeout(() => msg.remove(), 2500);
         }, 0);
     }
 
