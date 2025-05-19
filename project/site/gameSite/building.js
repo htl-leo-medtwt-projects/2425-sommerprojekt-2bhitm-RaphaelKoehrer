@@ -107,6 +107,9 @@
             map[spot.y][spot.x+1] = 223;
             window.wood -= bridge.wood;
             window.gold -= bridge.gold;
+            if (typeof window.missionProgress !== 'undefined') {
+                window.missionProgress.bridge = (window.missionProgress.bridge || 0) + 1;
+            }
             if (typeof window.buildings !== 'undefined') { window.buildings++; }
             if (typeof updateResourceBar === 'function') updateResourceBar();
             if (typeof drawMap === 'function') drawMap();
@@ -174,6 +177,9 @@
             map[spot.y][spot.x] = 500;
             window.wood -= farm.wood;
             window.gold -= farm.gold;
+            if (typeof window.missionProgress !== 'undefined') {
+                window.missionProgress.farm = (window.missionProgress.farm || 0) + 1;
+            }
             if (typeof window.buildings !== 'undefined') { window.buildings++; }
             if (typeof updateResourceBar === 'function') updateResourceBar();
             if (typeof drawMap === 'function') drawMap();
