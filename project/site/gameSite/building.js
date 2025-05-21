@@ -481,4 +481,56 @@
             attachBuildIconClick();
         });
     }
+
+    // Missionsanzeige rechts neben der Map
+    function showMissionDisplay() {
+        let missionDisplay = document.getElementById('missionDisplay');
+        if (!missionDisplay) {
+            missionDisplay = document.createElement('div');
+            missionDisplay.id = 'missionDisplay';
+            missionDisplay.style.position = 'absolute';
+            missionDisplay.style.right = '150px';
+            missionDisplay.style.top = '120px';
+            missionDisplay.style.width = '260px';
+            missionDisplay.style.minHeight = '120px';
+            missionDisplay.style.background = 'rgba(0,0,0,0.7)';
+            missionDisplay.style.color = 'white';
+            missionDisplay.style.fontSize = '1.5rem';
+            missionDisplay.style.padding = '18px 18px 18px 24px';
+            missionDisplay.style.borderRadius = '12px';
+            missionDisplay.style.zIndex = '1001';
+            missionDisplay.style.display = 'flex';
+            missionDisplay.style.flexDirection = 'column';
+            missionDisplay.style.justifyContent = 'flex-start';
+            missionDisplay.style.alignItems = 'flex-start';
+            document.body.appendChild(missionDisplay);
+        }
+        let missionText = '';
+        let params = window.params;
+        if (!params) {
+            params = {};
+            window.location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (_, key, value) {
+                params[key] = decodeURIComponent(value);
+            });
+            window.params = params;
+        }
+        if (params.mission === 'none') {
+            missionText = '<b>No Mission</b>';
+        } else if (params.mission === 'mission1') {
+            missionText = '<b>Mission 1</b><ul style="margin-top:8px;">'
+                + '<li id="missionFarm">Baue 3 Farmen</li>'
+                + '<li id="missionBridge">Baue 2 Brücken</li>'
+                + '</ul>';
+        } else if (params.mission === 'mission2') {
+            missionText = '<b>Mission 2</b><ul style="margin-top:8px;">'
+                + '<li id="missionFarm">Baue 5 Farmen</li>'
+                + '<li id="missionBridge">Baue 1 Brücke</li>'
+                + '</ul>';
+        } else {
+            missionText = '';
+        }
+        missionDisplay.innerHTML = missionText;
+    }
+    // Beim Laden anzeigen
+    showMissionDisplay();
 })();
