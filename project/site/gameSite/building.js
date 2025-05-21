@@ -107,9 +107,11 @@
         map[spot.y][spot.x+1] = 223;
         window.wood -= bridge.wood;
         window.gold -= bridge.gold;
-        if (typeof window.missionProgress !== 'undefined') {
-            window.missionProgress.bridge = (window.missionProgress.bridge || 0) + 1;
+        // missionProgress initialisieren, falls nicht vorhanden
+        if (typeof window.missionProgress === 'undefined' || !window.missionProgress) {
+            window.missionProgress = {};
         }
+        window.missionProgress.bridge = (window.missionProgress.bridge || 0) + 1;
         if (typeof window.buildings !== 'undefined') { window.buildings++; }
         if (typeof updateResourceBar === 'function') updateResourceBar();
         if (typeof drawMap === 'function') drawMap();
@@ -177,9 +179,11 @@
         map[spot.y][spot.x] = 500;
         window.wood -= farm.wood;
         window.gold -= farm.gold;
-        if (typeof window.missionProgress !== 'undefined') {
-            window.missionProgress.farm = (window.missionProgress.farm || 0) + 1;
+        // missionProgress initialisieren, falls nicht vorhanden
+        if (typeof window.missionProgress === 'undefined' || !window.missionProgress) {
+            window.missionProgress = {};
         }
+        window.missionProgress.farm = (window.missionProgress.farm || 0) + 1;
         if (typeof window.buildings !== 'undefined') { window.buildings++; }
         if (typeof updateResourceBar === 'function') updateResourceBar();
         if (typeof drawMap === 'function') drawMap();
@@ -227,7 +231,10 @@
         if (!tower) return;
         // Prüfe Voraussetzungen
         if (tower.requires) {
-            if (!window.missionProgress || window.missionProgress.farm < tower.requires.farm || window.missionProgress.bridge < tower.requires.bridge) {
+            // missionProgress.farm und missionProgress.bridge müssen korrekt gezählt werden
+            const farmCount = window.missionProgress && window.missionProgress.farm ? window.missionProgress.farm : 0;
+            const bridgeCount = window.missionProgress && window.missionProgress.bridge ? window.missionProgress.bridge : 0;
+            if (farmCount < tower.requires.farm || bridgeCount < tower.requires.bridge) {
                 showBuildMessage('Du brauchst mindestens 1 Farm und 1 Brücke für einen Tower!');
                 return;
             }
@@ -254,6 +261,9 @@
         map[spot.y][spot.x] = 501;
         window.wood -= tower.wood;
         window.gold -= tower.gold;
+        if (typeof window.missionProgress !== 'undefined') {
+            window.missionProgress.tower = (window.missionProgress.tower || 0) + 1;
+        }
         if (typeof window.buildings !== 'undefined') { window.buildings++; }
         // Power erhöhen
         if (typeof window.power !== 'undefined') { window.power++; }
