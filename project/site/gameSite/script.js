@@ -82,11 +82,37 @@ function StartGame() {
             223: 'img/swamp/Bridge/BridgeRight.png',
             500: 'img/Farm.png',
             501: 'img/Tower.png',
+            502: 'img/Lumbermill.png',
+            503: 'img/Refinery.png',
             999: 'img/mine.png',
             1000: './img/build/bridge.png',
         };
         
         loadTiles();
+        map = [
+            [3, 3, 3, 3, 4, 4, 4, 3, 6, 8, 5, 9, 7, 4, 4, 3, 3, 4, 3, 3],
+            [4, 3, 3, 3, 4, 4, 3, 4, 6, 8, 5, 9, 7, 4, 4, 3, 3, 3, 4, 3],
+            [3, 4, 4, 3, 3, 4, 3, 3, 6, 8, 5, 9, 7, 1, 3, 4, 3, 3, 4, 4],
+            [4, 4, 3, 3, 4, 3, 3, 3, 6, 8, 5, 9, 7, 1, 2, 4, 3, 3, 3, 4],
+            [3, 4, 3, 4, 4, 3, 1, 1, 6, 8, 5, 9, 7, 2, 1, 1, 3, 4, 4, 3],
+            [4, 4, 3, 2, 2, 1, 1, 2, 6, 8, 5, 9, 7, 2, 2, 1, 1, 4, 3, 4],
+            [4, 3, 2, 2, 1, 1, 1, 1, 6, 8, 5, 9, 7, 1, 1, 2, 1, 1, 3, 4],
+            [3, 1, 2, 2, 2, 2, 2, 1, 6, 8, 5, 9, 7, 1, 2, 2, 1, 1, 1, 2],
+            [1, 1, 1, 1, 1, 2, 1, 1, 6, 8, 5, 9, 7, 2, 2, 1, 1, 2, 1, 1],
+            [1, 1, 2, 1, 1, 2, 2, 1, 6, 8, 5, 9, 7, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 6, 8, 5, 9, 7, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 2, 2, 1, 6, 8, 5, 9, 7, 1, 1, 1, 2, 2, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 6, 8, 5, 9, 7, 1, 1, 1, 1, 1, 1, 1],
+            [3, 3, 1, 1, 1, 1, 1, 1, 6, 8, 5, 9, 7, 1, 1, 2, 2, 1, 1, 1],
+            [3, 4, 4, 4, 1, 1, 1, 1, 6, 8, 5, 9, 7, 1, 1, 1, 1, 1, 1, 1],
+            [3, 4, 4, 4, 4, 3, 2, 2, 6, 8, 5, 9, 7, 2, 2, 1, 1, 2, 1, 2],
+            [4, 4, 3, 3, 4, 3, 1, 2, 6, 8, 5, 9, 7, 2, 2, 1, 1, 1, 3, 4],
+            [2, 2, 3, 4, 4, 1, 1, 2, 6, 8, 5, 9, 7, 1, 1, 1, 4, 3, 4, 4],
+            [1, 2, 1, 1, 2, 2, 1, 2, 6, 8, 5, 9, 7, 1, 2, 3, 3, 4, 3, 3],
+            [2, 1, 1, 1, 2, 1, 1, 2, 6, 8, 5, 9, 7, 4, 4, 3, 3, 3, 4, 3],
+        ];
+        window.map = map;
+        window.originalMap = JSON.parse(JSON.stringify(map));
     } else if (params.map == "map1") {
         if (params.map == "map1") {
             tileSources = { 1: 'img/winter/Grass/grass1.png', 
@@ -111,12 +137,38 @@ function StartGame() {
                 223: 'img/winter/Bridge/BridgeRight.png',
                 500: 'img/winter/Farm/Farm.png',
                 501: 'img/winter/Tower/Tower.png',
+                502: 'img/winter/Lumbermill/Lumbermill.png',
+                503: 'img/winter/Refinery/Refinery.png',
                 999: 'img/mine_winter.png',
                 1000: './img/build/bridge.png',
         };
         }
         
         loadTiles();
+        map = [ 
+            [3, 3, 3, 3, 4, 4, 4, 3, 6, 8, 5, 9, 7, 4, 4, 3, 3, 4, 3, 3],
+            [4, 3, 3, 3, 4, 4, 3, 4, 6, 100, 5, 101, 7, 4, 4, 3, 3, 3, 4, 3],
+            [3, 4, 4, 3, 3, 4, 3, 3, 6, 8, 5, 9, 7, 1, 3, 4, 3, 3, 4, 4],
+            [4, 4, 3, 3, 4, 3, 3, 3, 6, 100, 5, 101, 7, 1, 2, 4, 3, 3, 3, 4],
+            [3, 4, 3, 4, 4, 3, 1, 1, 6, 8, 5, 9, 7, 2, 1, 1, 3, 4, 4, 2],
+            [4, 4, 3, 2, 2, 1, 1, 2, 6, 100, 5, 101, 7, 2, 2, 1, 1, 4, 3, 4],
+            [4, 3, 2, 2, 1, 1, 1, 1, 6, 8, 5, 9, 7, 1, 1, 2, 1, 1, 3, 4],
+            [3, 1, 2, 2, 2, 2, 2, 1, 6, 100, 5, 101, 7, 1, 2, 2, 1, 1, 1, 2],
+            [1, 1, 1, 1, 1, 2, 1, 1, 6, 8, 5, 9, 7, 2, 2, 1, 1, 2, 1, 1],
+            [1, 1, 2, 1, 1, 2, 2, 1, 6, 100, 5, 101, 7, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 6, 8, 5, 9, 7, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 2, 2, 1, 6, 100, 5, 101, 7, 1, 1, 1, 2, 2, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 6, 8, 5, 9, 7, 1, 1, 1, 1, 1, 1, 1],
+            [3, 3, 1, 1, 1, 1, 1, 1, 6, 100, 5, 101, 7, 1, 1, 2, 2, 1, 1, 1],
+            [3, 4, 4, 4, 1, 1, 1, 1, 6, 8, 5, 9, 7, 1, 1, 1, 1, 1, 1, 1],
+            [3, 4, 4, 4, 4, 3, 2, 2, 6, 100, 5, 101, 7, 2, 2, 1, 1, 2, 1, 2],
+            [4, 4, 3, 3, 4, 3, 1, 2, 6, 8, 5, 9, 7, 2, 2, 1, 1, 1, 3, 4],
+            [2, 2, 3, 4, 4, 1, 1, 2, 6, 100, 5, 101, 7, 1, 1, 1, 4, 3, 4, 4],
+            [1, 2, 1, 1, 2, 2, 1, 2, 6, 8, 5, 9, 7, 1, 2, 3, 3, 4, 3, 3],
+            [2, 1, 1, 1, 2, 1, 1, 2, 6, 100, 5, 101, 7, 4, 4, 3, 3, 3, 4, 3],
+        ];
+        window.map = map;
+        window.originalMap = JSON.parse(JSON.stringify(map));
     }else if (params.map == "map3") {
         if (params.map == "map3") {
             tileSources = { 1: 'img/swamp/Grass/grass.png', 
@@ -141,140 +193,14 @@ function StartGame() {
                 223: 'img/swamp/Bridge/BridgeRight.png',
                 500: 'img/swamp/Farm/Farm.png',
                 501: 'img/swamp/Tower/Tower.png',
+                502: 'img/swamp/Lumbermill/Lumbermill.png',
+                503: 'img/swamp/Refinery/Refinery.png',
                 999: 'img/mine.png',
                 1000: './img/build/bridge.png',
         };
         }
         
         loadTiles();
-    }else {
-        console.log("map1!");
-        tileSources = {
-            1: 'img/grass1.png',
-            2: 'img/grass2.png',
-            3: 'img/Trees/tree1/tree1.png',
-            4: 'img/Trees/tree2/tree2.png',
-            5: 'img/water.png',
-            6: 'img/waterGrassLeft.png',
-            7: 'img/waterGrassRight.png',
-            8: 'img/waterLandLeft.png',
-            9: 'img/waterLandRight.png',
-            31: 'img/Trees/tree1/tree1_2.png',
-            32: 'img/Trees/tree1/tree1_3.png',
-            33: 'img/Trees/tree1/tree1_4.png',
-            41: 'img/Trees/tree2/tree2_2.png',
-            42: 'img/Trees/tree2/tree2_3.png',
-            43: 'img/Trees/tree2/tree2_4.png',
-            221: 'img/Default/Bridge/BridgeLeft.png',
-            222: 'img/Default/Bridge/BridgeMiddle.png',
-            223: 'img/Default/Bridge/BridgeRight.png',
-            500: 'img/Farm.png',
-            501: 'img/Tower.png',
-            999: 'img/mine.png',
-            1000: './img/build/bridge.png',
-        };
-        
-        loadTiles();
-    }
-
-    function setupMissionDisplay() {
-        let missionDisplay = document.getElementById('missionDisplay');
-        if (!missionDisplay) {
-            missionDisplay = document.createElement('div');
-            missionDisplay.id = 'missionDisplay';
-            missionDisplay.style.position = 'absolute';
-            missionDisplay.style.left = '75%';
-            missionDisplay.style.top = '12%';
-            missionDisplay.style.width = 'fit-content';
-            missionDisplay.style.minHeight = 'fit-content';
-            missionDisplay.style.background = 'rgba(0,0,0,0.6)';
-            missionDisplay.style.color = 'white';
-            missionDisplay.style.fontSize = '1.5rem';
-            missionDisplay.style.padding = '18px 18px 18px 24px';
-            missionDisplay.style.borderRadius = '12px';
-            missionDisplay.style.zIndex = '1001';
-            missionDisplay.style.display = 'flex';
-            missionDisplay.style.flexDirection = 'column';
-            missionDisplay.style.justifyContent = 'flex-start';
-            missionDisplay.style.alignItems = 'flex-start';
-            document.body.appendChild(missionDisplay);
-        }
-        // Missionslogik
-        let missionText = '';
-        let missionGoals = {};
-        if (params.mission === 'none') {
-            missionText = '<b>No Mission</b>';
-        } else if (params.mission === 'mission1') {
-            missionText = '<b>Mission 1</b><ul style="margin-top:8px;">'
-                + '<li id="missionFarm">Baue 3 Farmen</li>'
-                + '<li id="missionBridge">Baue 2 Brücken</li>'
-                + '</ul>';
-            missionGoals = { farm: 3, bridge: 2 };
-        } else if (params.mission === 'mission2') {
-            missionText = '<b>Mission 2</b><ul style="margin-top:8px;">'
-                + '<li id="missionFarm">Baue 5 Farmen</li>'
-                + '<li id="missionBridge">Baue 1 Brücke</li>'
-                + '</ul>';
-            missionGoals = { farm: 5, bridge: 1 };
-        } else {
-            missionText = '';
-        }
-        missionDisplay.innerHTML = missionText;
-        window.missionGoals = missionGoals;
-        window.missionProgress = { farm: 0, bridge: 0 };
-    }
-    setupMissionDisplay();
-
-    // Map-Definitionen und TileSources
-    if (params.map == "map2") {
-        map = [
-            [3, 3, 3, 3, 4, 4, 4, 3, 6, 8, 5, 9, 7, 4, 4, 3, 3, 4, 3, 3],
-            [4, 3, 3, 3, 4, 4, 3, 4, 6, 8, 5, 9, 7, 4, 4, 3, 3, 3, 4, 3],
-            [3, 4, 4, 3, 3, 4, 3, 3, 6, 8, 5, 9, 7, 1, 3, 4, 3, 3, 4, 4],
-            [4, 4, 3, 3, 4, 3, 3, 3, 6, 8, 5, 9, 7, 1, 2, 4, 3, 3, 3, 4],
-            [3, 4, 3, 4, 4, 3, 1, 1, 6, 8, 5, 9, 7, 2, 1, 1, 3, 4, 4, 3],
-            [4, 4, 3, 2, 2, 1, 1, 2, 6, 8, 5, 9, 7, 2, 2, 1, 1, 4, 3, 4],
-            [4, 3, 2, 2, 1, 1, 1, 1, 6, 8, 5, 9, 7, 1, 1, 2, 1, 1, 3, 4],
-            [3, 1, 2, 2, 2, 2, 2, 1, 6, 8, 5, 9, 7, 1, 2, 2, 1, 1, 1, 2],
-            [1, 1, 1, 1, 1, 2, 1, 1, 6, 8, 5, 9, 7, 2, 2, 1, 1, 2, 1, 1],
-            [1, 1, 2, 1, 1, 2, 2, 1, 6, 8, 5, 9, 7, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1, 6, 8, 5, 9, 7, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 2, 2, 1, 6, 8, 5, 9, 7, 1, 1, 1, 2, 2, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1, 6, 8, 5, 9, 7, 1, 1, 1, 1, 1, 1, 1],
-            [3, 3, 1, 1, 1, 1, 1, 1, 6, 8, 5, 9, 7, 1, 1, 2, 2, 1, 1, 1],
-            [3, 4, 4, 4, 1, 1, 1, 1, 6, 8, 5, 9, 7, 1, 1, 1, 1, 1, 1, 1],
-            [3, 4, 4, 4, 4, 3, 2, 2, 6, 8, 5, 9, 7, 2, 2, 1, 1, 2, 1, 2],
-            [4, 4, 3, 3, 4, 3, 1, 2, 6, 8, 5, 9, 7, 2, 2, 1, 1, 1, 3, 4],
-            [2, 2, 3, 4, 4, 1, 1, 2, 6, 8, 5, 9, 7, 1, 1, 1, 4, 3, 4, 4],
-            [1, 2, 1, 1, 2, 2, 1, 2, 6, 8, 5, 9, 7, 1, 2, 3, 3, 4, 3, 3],
-            [2, 1, 1, 1, 2, 1, 1, 2, 6, 8, 5, 9, 7, 4, 4, 3, 3, 3, 4, 3],
-        ];
-        window.map = map;
-    } else if (params.map == "map1") {
-        map = [ 
-            [3, 3, 3, 3, 4, 4, 4, 3, 6, 8, 5, 9, 7, 4, 4, 3, 3, 4, 3, 3],
-            [4, 3, 3, 3, 4, 4, 3, 4, 6, 100, 5, 101, 7, 4, 4, 3, 3, 3, 4, 3],
-            [3, 4, 4, 3, 3, 4, 3, 3, 6, 8, 5, 9, 7, 1, 3, 4, 3, 3, 4, 4],
-            [4, 4, 3, 3, 4, 3, 3, 3, 6, 100, 5, 101, 7, 1, 2, 4, 3, 3, 3, 4],
-            [3, 4, 3, 4, 4, 3, 1, 1, 6, 8, 5, 9, 7, 2, 1, 1, 3, 4, 4, 2],
-            [4, 4, 3, 2, 2, 1, 1, 2, 6, 100, 5, 101, 7, 2, 2, 1, 1, 4, 3, 4],
-            [4, 3, 2, 2, 1, 1, 1, 1, 6, 8, 5, 9, 7, 1, 1, 2, 1, 1, 3, 4],
-            [3, 1, 2, 2, 2, 2, 2, 1, 6, 100, 5, 101, 7, 1, 2, 2, 1, 1, 1, 2],
-            [1, 1, 1, 1, 1, 2, 1, 1, 6, 8, 5, 9, 7, 2, 2, 1, 1, 2, 1, 1],
-            [1, 1, 2, 1, 1, 2, 2, 1, 6, 100, 5, 101, 7, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1, 6, 8, 5, 9, 7, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 2, 2, 1, 6, 100, 5, 101, 7, 1, 1, 1, 2, 2, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1, 6, 8, 5, 9, 7, 1, 1, 1, 1, 1, 1, 1],
-            [3, 3, 1, 1, 1, 1, 1, 1, 6, 100, 5, 101, 7, 1, 1, 2, 2, 1, 1, 1],
-            [3, 4, 4, 4, 1, 1, 1, 1, 6, 8, 5, 9, 7, 1, 1, 1, 1, 1, 1, 1],
-            [3, 4, 4, 4, 4, 3, 2, 2, 6, 100, 5, 101, 7, 2, 2, 1, 1, 2, 1, 2],
-            [4, 4, 3, 3, 4, 3, 1, 2, 6, 8, 5, 9, 7, 2, 2, 1, 1, 1, 3, 4],
-            [2, 2, 3, 4, 4, 1, 1, 2, 6, 100, 5, 101, 7, 1, 1, 1, 4, 3, 4, 4],
-            [1, 2, 1, 1, 2, 2, 1, 2, 6, 8, 5, 9, 7, 1, 2, 3, 3, 4, 3, 3],
-            [2, 1, 1, 1, 2, 1, 1, 2, 6, 100, 5, 101, 7, 4, 4, 3, 3, 3, 4, 3],
-        ];
-        window.map = map;
-    }else if (params.map == "map3") {
         map = [ 
             [3, 3, 3, 3, 4, 4, 4, 3, 1, 8, 5, 9, 7, 4, 4, 3, 3, 4, 3, 3],
             [4, 3, 3, 3, 4, 4, 3, 4, 1, 8, 5, 9, 7, 4, 4, 3, 3, 3, 4, 3],
@@ -298,7 +224,37 @@ function StartGame() {
             [2, 1, 1, 1, 2, 1, 1, 2, 1, 8, 5, 9, 7, 4, 4, 3, 3, 3, 4, 3],
         ];
         window.map = map;
+        window.originalMap = JSON.parse(JSON.stringify(map));
     }else {
+        console.log("map1!");
+        tileSources = {
+            1: 'img/grass1.png',
+            2: 'img/grass2.png',
+            3: 'img/Trees/tree1/tree1.png',
+            4: 'img/Trees/tree2/tree2.png',
+            5: 'img/water.png',
+            6: 'img/waterGrassLeft.png',
+            7: 'img/waterGrassRight.png',
+            8: 'img/waterLandLeft.png',
+            9: 'img/waterLandRight.png',
+            31: 'img/Trees/tree1/tree1_2.png',
+            32: 'img/Trees/tree1/tree1_3.png',
+            33: 'img/Trees/tree1/tree1_4.png',
+            41: 'img/Trees/tree2/tree2_2.png',
+            42: 'img/Trees/tree2/tree2_3.png',
+            43: 'img/Trees/tree2/tree2_4.png',
+            221: 'img/Default/Bridge/BridgeLeft.png',
+            222: 'img/Default/Bridge/BridgeMiddle.png',
+            223: 'img/Default/Bridge/BridgeRight.png',
+            500: 'img/Farm.png',
+            501: 'img/Tower.png',
+            502: 'img/Lumbermill.png',
+            503: 'img/Refinery.png',
+            999: 'img/mine.png',
+            1000: './img/build/bridge.png',
+        };
+        
+        loadTiles();
         map = [
             [3, 3, 3, 3, 4, 4, 4, 3, 6, 8, 5, 9, 7, 4, 4, 3, 3, 4, 3, 3],
             [4, 3, 3, 3, 4, 4, 3, 4, 6, 8, 5, 9, 7, 4, 4, 3, 3, 3, 4, 3],
@@ -322,6 +278,7 @@ function StartGame() {
             [2, 1, 1, 1, 2, 1, 1, 2, 6, 8, 5, 9, 7, 4, 4, 3, 3, 3, 4, 3],
         ];
         window.map = map;
+        window.originalMap = JSON.parse(JSON.stringify(map));
     }
 
    
@@ -904,10 +861,28 @@ function StartGame() {
                 map[tileY][tileX] = animationFrames[currentFrame];
                 drawMap();
                 currentFrame++;
-                setTimeout(animateChop, 2500);
+                // Baumfällen-Dauer: 1.5s wenn Refinery gebaut, sonst 2.5s
+                let chopTime = 2500;
+                if (window.hasRefinery) chopTime = 1500;
+                setTimeout(animateChop, chopTime);
             } else {
                 map[tileY][tileX] = Math.random() < 0.5 ? 1 : 2;
-                wood += 50;
+                // Starte Timer für Baum-Respawn
+                if (window.originalMap && (window.originalMap[tileY][tileX] === 3 || window.originalMap[tileY][tileX] === 4)) {
+                    setTimeout(() => {
+                        // Nur respawnen, wenn dort aktuell kein Baum steht
+                        if (map[tileY][tileX] !== 3 && map[tileY][tileX] !== 4) {
+                            map[tileY][tileX] = window.originalMap[tileY][tileX];
+                            drawMap();
+                        }
+                    }, 30000);
+                }
+                // Prüfe ob mindestens eine Lumbermill gebaut wurde
+                let woodAmount = 50;
+                if (window.missionProgress && window.missionProgress.lumbermill && window.missionProgress.lumbermill >= 1) {
+                    woodAmount = 75;
+                }
+                wood += woodAmount;
                 window.wood = wood;
                 window.gold = gold;
                 updateResourceBar();
@@ -1152,6 +1127,21 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Upgrade-Menü Logik
+    const upgradeIcon = document.getElementById('upgradeIcon');
+    const upgradeMenu = document.getElementById('upgradeMenu');
+    const closeUpgradeMenu = document.getElementById('closeUpgradeMenu');
+    if (upgradeIcon && upgradeMenu) {
+        upgradeIcon.style.cursor = 'pointer';
+        upgradeIcon.addEventListener('click', () => {
+            upgradeMenu.style.display = 'flex';
+        });
+    }
+    if (closeUpgradeMenu && upgradeMenu) {
+        closeUpgradeMenu.addEventListener('click', () => {
+            upgradeMenu.style.display = 'none';
+        });
+    }
 
     document.addEventListener('keydown', (e) => {
         if (e.key.toLowerCase() === 'm' && menuScreen) {
