@@ -297,3 +297,41 @@ body {
     width: fit-content;
     height: fit-content;
 }
+
+#smallScreenOverlay {
+    display: none;
+    position: fixed;
+    z-index: 99999;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: black;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+#smallScreenOverlay p {
+    color: white;
+    font-size: 3rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+    font-family: system-ui, Arial, sans-serif; /* Default font */
+    text-shadow: 2px 2px 8px #000;
+    margin: 0;
+    padding: 0 24px;
+}
+
+@media (max-width: 1024px), (max-height: 700px) {
+    #smallScreenOverlay {
+        display: flex;
+    }
+    #ButtonWrapper,
+    #tutorial,
+    #settingsDiv,
+    #leaderBoardDiv,
+    #leaderboard,
+    #settings,
+    #transitionOverlay,
+    #transitionOverlayLoad {
+        display: none !important;
+    }
+}
