@@ -40,8 +40,21 @@ if (!helpOverlay) {
     helpOverlay.style.pointerEvents = 'none';
     helpOverlay.style.fontFamily = 'custom, Arial, sans-serif';
     helpOverlay.textContent = 'Build a Bridge so you can get to the Goldmine!';
+    helpOverlay.style.display = 'none'; 
     document.body.appendChild(helpOverlay);
+} else {
+    helpOverlay.style.display = 'none'; 
 }
+
+let missionDisplay = document.getElementById('missionDisplay');
+if (missionDisplay) {
+    missionDisplay.style.display = 'none';
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    let missionDisplay = document.getElementById('missionDisplay');
+    if (missionDisplay) missionDisplay.style.display = 'none';
+});
 function setHelpOverlay(text, duration) {
     helpOverlay.textContent = text;
     helpOverlay.style.display = 'block';
@@ -57,10 +70,9 @@ function StartGame() {
     const params = GetQueryParams();
     console.log("StartGame params:", params);
 
-    // WICHTIG: MapPlaceholder und MinimapSection direkt am Anfang initialisieren
     const mapPlaceholder = document.getElementById('mapPlaceholder');
     const minimapSection = document.getElementById('minimapSection');
-    // TileImages direkt am Anfang deklarieren
+
     const tileImages = {};
 
     delStart();
@@ -1190,6 +1202,10 @@ function fadeInPage() {
 function delStart() {
     document.getElementById('startGame').style.display = 'none';
     document.getElementById('gameWrapper').style.display = 'flex';
+    // HelpOverlay und MissionDisplay erst jetzt anzeigen
+    if (helpOverlay) helpOverlay.style.display = 'block';
+    let missionDisplay = document.getElementById('missionDisplay');
+    if (missionDisplay) missionDisplay.style.display = 'block';
 }
 
 // Game Over Screen anzeigen
