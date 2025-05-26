@@ -21,6 +21,37 @@ setInterval(() => {
     }
 }, 200);
 
+// --- Starthilfe Overlay ---
+let helpOverlay = document.getElementById('helpOverlay');
+if (!helpOverlay) {
+    helpOverlay = document.createElement('div');
+    helpOverlay.id = 'helpOverlay';
+    helpOverlay.style.position = 'absolute';
+    helpOverlay.style.top = '100px';
+    helpOverlay.style.left = '50%';
+    helpOverlay.style.transform = 'translateX(-50%)';
+    helpOverlay.style.background = 'rgba(0,0,0,0.45)';
+    helpOverlay.style.color = 'white';
+    helpOverlay.style.fontSize = '2rem';
+    helpOverlay.style.padding = '12px 32px';
+    helpOverlay.style.borderRadius = '12px';
+    helpOverlay.style.zIndex = '3001';
+    helpOverlay.style.textAlign = 'center';
+    helpOverlay.style.pointerEvents = 'none';
+    helpOverlay.style.fontFamily = 'custom, Arial, sans-serif';
+    helpOverlay.textContent = 'Build a Bridge so you can get to the Goldmine!';
+    document.body.appendChild(helpOverlay);
+}
+function setHelpOverlay(text, duration) {
+    helpOverlay.textContent = text;
+    helpOverlay.style.display = 'block';
+    if (duration) {
+        setTimeout(() => {
+            helpOverlay.style.display = 'none';
+        }, duration);
+    }
+}
+
 // Spielstart und Map-Initialisierung
 function StartGame() {
     const params = GetQueryParams();
@@ -283,6 +314,42 @@ function StartGame() {
         ];
         window.map = map;
         window.originalMap = JSON.parse(JSON.stringify(map));
+    }
+
+    // --- Hook in Bridge bauen und Goldmine finden ---
+    // Brückenbau-Überwachung
+    let bridgeBuilt = false;
+    let goldmineFound = false;
+    // Patch placeBridgeRandomly, falls vorhanden
+    if (typeof window.placeBridgeRandomly === 'function') {
+        const origPlaceBridgeRandomly = window.placeBridgeRandomly;
+        window.placeBridgeRandomly = function() {
+            const beforeBridge = window.missionProgress && window.missionProgress.bridge || 0;
+            origPlaceBridgeRandomly();
+            const afterBridge = window.missionProgress && window.missionProgress.bridge || 0;
+            if (!bridgeBuilt && afterBridge > beforeBridge) {
+                bridgeBuilt = true;
+                setHelpOverlay('Run to the Goldmine and press Right Click!');
+            }
+        }
+    }
+    // Fallback: Überwache missionProgress.bridge im Ressourcen-Update
+    const origUpdateResourceBar = window.updateResourceBar;
+    window.updateResourceBar = function() {
+        if (origUpdateResourceBar) origUpdateResourceBar();
+        if (!bridgeBuilt && window.missionProgress && window.missionProgress.bridge > 0) {
+            bridgeBuilt = true;
+            setHelpOverlay('Run to the Goldmine and press Right Click!');
+        }
+    }
+    // Goldmine finden überwachen
+    const origShowGoldmineMessage = window.showGoldmineMessage;
+    window.showGoldmineMessage = function(tileX, tileY) {
+        if (origShowGoldmineMessage) origShowGoldmineMessage(tileX, tileY);
+        if (!goldmineFound) {
+            goldmineFound = true;
+            setHelpOverlay('Congratulations, you have found the goldmine!', 5000);
+        }
     }
 
     // Baum fällen Funktion (muss im Scope von StartGame sein!)
