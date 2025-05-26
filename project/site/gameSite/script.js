@@ -84,6 +84,7 @@ function StartGame() {
             501: 'img/Tower.png',
             502: 'img/Lumbermill.png',
             503: 'img/Refinery.png',
+            504: 'img/Goldmine.png',
             999: 'img/mine.png',
             1000: './img/build/bridge.png',
         };
@@ -139,6 +140,7 @@ function StartGame() {
                 501: 'img/winter/Tower/Tower.png',
                 502: 'img/winter/Lumbermill/Lumbermill.png',
                 503: 'img/winter/Refinery/Refinery.png',
+                504: 'img/winter/Goldmine/Goldmine.png',
                 999: 'img/mine_winter.png',
                 1000: './img/build/bridge.png',
         };
@@ -195,6 +197,7 @@ function StartGame() {
                 501: 'img/swamp/Tower/Tower.png',
                 502: 'img/swamp/Lumbermill/Lumbermill.png',
                 503: 'img/swamp/Refinery/Refinery.png',
+                504: 'img/swamp/Goldmine/Goldmine.png',
                 999: 'img/mine.png',
                 1000: './img/build/bridge.png',
         };
@@ -250,6 +253,7 @@ function StartGame() {
             501: 'img/Tower.png',
             502: 'img/Lumbermill.png',
             503: 'img/Refinery.png',
+            504: 'img/Goldmine.png',
             999: 'img/mine.png',
             1000: './img/build/bridge.png',
         };
@@ -281,7 +285,64 @@ function StartGame() {
         window.originalMap = JSON.parse(JSON.stringify(map));
     }
 
-   
+    // Baum fällen Funktion (muss im Scope von StartGame sein!)
+    function showTreeMessage(message) {
+        const msg = document.createElement('div');
+        msg.textContent = message;
+        msg.style.position = 'absolute';
+        msg.style.left = `${player.x * tileSize + tileSize / 2}px`;
+        msg.style.top = `${player.y * tileSize - tileSize / 2}px`;
+        msg.style.color = 'darkgray';
+        msg.style.fontSize = '32px'; 
+        msg.style.letterSpacing = '2px';
+        msg.style.fontWeight = 'bold';
+        msg.style.textShadow = '1px 1px 2px black';
+        msg.style.transition = 'transform 2.5s, opacity 2.5s'; 
+        msg.style.transform = 'translateY(0)';
+        msg.style.opacity = '1';
+        mapPlaceholder.appendChild(msg);
+        setTimeout(() => {
+            msg.style.transform = 'translateY(-60px)';
+            msg.style.opacity = '0';
+            setTimeout(() => msg.remove(), 2500);
+        }, 0);
+    }
+    function chopTree(tileX, tileY, tileId) {
+        if (isChoppingTree) return;
+        isChoppingTree = true;
+        showTreeMessage('Chopping tree...');
+        let animSteps;
+        if (tileId === 3) {
+            animSteps = [31, 32, 33];
+        } else if (tileId === 4) {
+            animSteps = [41, 42, 43];
+        } else {
+            isChoppingTree = false;
+            return;
+        }
+        let step = 0;
+        let totalDuration = (window.hasRefinery ? 4000 : 5000);
+        let frameDuration = Math.floor(totalDuration / animSteps.length);
+        function animateStep() {
+            if (step < animSteps.length) {
+                map[tileY][tileX] = animSteps[step];
+                if (typeof drawMap === 'function') drawMap();
+                step++;
+                setTimeout(animateStep, frameDuration);
+            } else {
+                const newTile = Math.random() < 0.5 ? 1 : 2;
+                map[tileY][tileX] = newTile;
+                let woodGain = window.missionProgress && window.missionProgress.lumbermill > 0 ? 75 : 50;
+                wood += woodGain;
+                window.wood = wood;
+                if (typeof updateResourceBar === 'function') updateResourceBar();
+                if (typeof drawMap === 'function') drawMap();
+                isChoppingTree = false;
+            }
+        }
+        animateStep();
+    }
+
     let timerInterval;
     let timeLeft = 0;
     // Zeitlimit aus params.timeLimit statt params.time auslesen
@@ -562,6 +623,7 @@ function StartGame() {
 
         if (controlType === 'click') {
             canvas.onclick = handleCanvasClick;
+            canvas.oncontextmenu = handleCanvasRightClick;
         }
     }
     window.drawMap = drawMap;
@@ -759,18 +821,6 @@ function StartGame() {
         }
     }
 
-    // Baum-Highlight und Fällen
-    function highlightTreeTile(tileX, tileY) {
-        const canvas = mapPlaceholder.firstChild;
-        const ctx = canvas.getContext('2d');
-        const x = tileX * tileSize;
-        const y = tileY * tileSize;
-
-        ctx.strokeStyle = 'lightgreen';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(x, y, tileSize, tileSize);
-    }
-
     function handleCanvasRightClick(e) {
         e.preventDefault();
         const rect = e.target.getBoundingClientRect();
@@ -780,6 +830,23 @@ function StartGame() {
         const tileY = Math.floor(clickY / tileSize);
 
         const tileId = map[tileY]?.[tileX];
+        // Goldmine-Logik
+        if (tileId === 504) {
+            if (!window.goldmineDiscovered) {
+                window.goldmineDiscovered = true;
+                showGoldmineMessage(tileX, tileY);
+                blinkGoldmineTile(tileX, tileY, 3000);
+                if (window.goldmineInterval) clearInterval(window.goldmineInterval);
+                window.goldmineInterval = setInterval(() => {
+                    gold += 500;
+                    window.gold = gold;
+                    if (typeof updateResourceBar === 'function') updateResourceBar();
+                }, 60000);
+            } else {
+                blinkGoldmineTile(tileX, tileY, 3000);
+            }
+            return;
+        }
         if (tileId === 3 || tileId === 4) {
             const adjacentGrassTile = findAdjacentGrassTile(tileX, tileY);
             if (adjacentGrassTile) {
@@ -804,98 +871,101 @@ function StartGame() {
         }
     }
 
-    function findAdjacentGrassTile(treeX, treeY) {
+    // Hilfsfunktion: Finde angrenzendes Grasfeld zu einem Baum
+    function findAdjacentGrassTile(tileX, tileY) {
         const directions = [
-            { dx: 0, dy: -1 },
-            { dx: 0, dy: 1 },
-            { dx: -1, dy: 0 },
-            { dx: 1, dy: 0 }
+            { dx: 0, dy: -1 }, // oben
+            { dx: 0, dy: 1 },  // unten
+            { dx: -1, dy: 0 }, // links
+            { dx: 1, dy: 0 }   // rechts
         ];
-
         for (const { dx, dy } of directions) {
-            const adjacentX = treeX + dx;
-            const adjacentY = treeY + dy;
-            if (map[adjacentY]?.[adjacentX] === 1 || map[adjacentY]?.[adjacentX] === 2) {
-                return { x: adjacentX, y: adjacentY };
+            const nx = tileX + dx;
+            const ny = tileY + dy;
+            if (
+                nx >= 0 && nx < map[0].length &&
+                ny >= 0 && ny < map.length &&
+                (map[ny][nx] === 1 || map[ny][nx] === 2)
+            ) {
+                return { x: nx, y: ny };
             }
         }
         return null;
     }
 
-    function showTreeMessage(message) {
+    function blinkGoldmineTile(tileX, tileY, duration) {
+        const canvas = mapPlaceholder.firstChild;
+        const ctx = canvas.getContext('2d');
+        const x = tileX * tileSize;
+        const y = tileY * tileSize;
+        let blink = true;
+        let elapsed = 0;
+        const blinkInterval = 150;
+        function doBlink() {
+            ctx.save();
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = 'gold';
+            ctx.globalAlpha = blink ? 1 : 0.2;
+            ctx.strokeRect(x, y, tileSize, tileSize);
+            ctx.restore();
+            blink = !blink;
+            elapsed += blinkInterval;
+            if (elapsed < duration) {
+                setTimeout(doBlink, blinkInterval);
+            } else {
+                drawMap();
+            }
+        }
+        doBlink();
+    }
+
+    function showGoldmineMessage(tileX, tileY) {
+        // Wie showTreeMessage, aber goldener Text und zentraler
         const msg = document.createElement('div');
-        msg.textContent = message;
+        msg.textContent = 'You have found the Goldmine! + 500 Gold every minute!';
         msg.style.position = 'absolute';
-        msg.style.left = `${player.x * tileSize + tileSize / 2}px`;
-        msg.style.top = `${player.y * tileSize - tileSize / 2}px`;
-        msg.style.color = 'darkgray';
-        msg.style.fontSize = '32px'; 
+        msg.style.left = '50%';
+        msg.style.top = '30%';
+        msg.style.transform = 'translate(-50%, 0)';
+        msg.style.color = 'gold';
+        msg.style.fontSize = '32px';
         msg.style.letterSpacing = '2px';
         msg.style.fontWeight = 'bold';
-        msg.style.textShadow = '1px 1px 2px black';
-        msg.style.transition = 'transform 2.5s, opacity 2.5s'; 
-        msg.style.transform = 'translateY(0)';
+        msg.style.textShadow = '1px 1px 2px black'; 
+        msg.style.transition = 'opacity 0.3s';
         msg.style.opacity = '1';
-        mapPlaceholder.appendChild(msg);
-
-        setTimeout(() => {
-            msg.style.transform = 'translateY(-60px)';
-            msg.style.opacity = '0';
-            setTimeout(() => msg.remove(), 2500);
-        }, 0);
-    }
-
-    function chopTree(tileX, tileY, tileId) {
-        if (isChoppingTree) {
-            showTreeMessage("You're currently chopping a tree!");
-            return;
-        }
-
-        isChoppingTree = true;
-        const isTree1 = tileId === 3;
-        const animationFrames = isTree1 ? [31, 32, 33] : [41, 42, 43];
-        let currentFrame = 0;
-
-        const animateChop = () => {
-            if (currentFrame < animationFrames.length) {
-                map[tileY][tileX] = animationFrames[currentFrame];
-                drawMap();
-                currentFrame++;
-                // Baumfällen-Dauer: 1.5s wenn Refinery gebaut, sonst 2.5s
-                let chopTime = 2500;
-                if (window.hasRefinery) chopTime = 1500;
-                setTimeout(animateChop, chopTime);
-            } else {
-                map[tileY][tileX] = Math.random() < 0.5 ? 1 : 2;
-                // Starte Timer für Baum-Respawn
-                if (window.originalMap && (window.originalMap[tileY][tileX] === 3 || window.originalMap[tileY][tileX] === 4)) {
-                    setTimeout(() => {
-                        // Nur respawnen, wenn dort aktuell kein Baum steht
-                        if (map[tileY][tileX] !== 3 && map[tileY][tileX] !== 4) {
-                            map[tileY][tileX] = window.originalMap[tileY][tileX];
-                            drawMap();
-                        }
-                    }, 30000);
-                }
-                // Prüfe ob mindestens eine Lumbermill gebaut wurde
-                let woodAmount = 50;
-                if (window.missionProgress && window.missionProgress.lumbermill && window.missionProgress.lumbermill >= 1) {
-                    woodAmount = 75;
-                }
-                wood += woodAmount;
-                window.wood = wood;
-                window.gold = gold;
-                updateResourceBar();
-                drawMap();
-                isChoppingTree = false;
+        msg.style.zIndex = '9999';
+        document.body.appendChild(msg);
+        let visible = true;
+        let blinkCount = 0;
+        const blinkInterval = setInterval(() => {
+            visible = !visible;
+            msg.style.opacity = visible ? '1' : '0.2';
+            blinkCount++;
+            if (blinkCount > 9) { // 3s, alle 300ms
+                clearInterval(blinkInterval);
+                msg.style.opacity = '0';
+                setTimeout(() => msg.remove(), 500);
             }
-        };
-
-        animateChop();
+        }, 300);
     }
 
-    // EventListener für Rechtsklick
-    document.addEventListener('contextmenu', handleCanvasRightClick);
+    // Baum-Highlight und Fällen
+    function highlightTreeTile(tileX, tileY) {
+        const canvas = mapPlaceholder.firstChild;
+        const ctx = canvas.getContext('2d');
+        const x = tileX * tileSize;
+        const y = tileY * tileSize;
+
+        ctx.strokeStyle = 'lightgreen';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(x, y, tileSize, tileSize);
+    }
+
+    // chopTree global verfügbar machen
+    if (typeof chopTree === 'function') {
+        window.chopTree = chopTree;
+    }
 
     // Spieler Tod Prüfung
     function checkIfPlayerDied() {
@@ -1061,6 +1131,11 @@ function showGameOverScreen() {
     if (gameOverScreen) {
         gameOverScreen.style.display = 'flex';
     }
+    // Stoppe Goldmine-Timer
+    if (window.goldmineInterval) {
+        clearInterval(window.goldmineInterval);
+        window.goldmineInterval = null;
+    }
 }
 
 // You Won Screen anzeigen
@@ -1072,6 +1147,11 @@ function showYouWonScreen() {
     // Game stoppen (optional)
     document.getElementById('gameWrapper').style.display = 'none';
     document.getElementById('resourceBar').style.display = 'none';
+    // Stoppe Goldmine-Timer
+    if (window.goldmineInterval) {
+        clearInterval(window.goldmineInterval);
+        window.goldmineInterval = null;
+    }
 }
 window.showYouWonScreen = showYouWonScreen;
 

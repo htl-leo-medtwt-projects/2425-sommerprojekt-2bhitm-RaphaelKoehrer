@@ -122,6 +122,23 @@
         if (typeof window.buildings !== 'undefined' && typeof window.buildingGoal !== 'undefined' && window.buildings == window.buildingGoal) {
             if (typeof showYouWonScreen === 'function') showYouWonScreen();
         }
+        // Goldmine nach Brückenbau spawnen
+        if (!window.goldmineSpawned) {
+            // Suche rechts vom Fluss (x > 10) ein Tile 1 oder 2
+            let placed = false;
+            for (let y = 0; y < map.length; y++) {
+                for (let x = Math.floor(map[0].length/2)+1; x < map[0].length; x++) {
+                    if ((map[y][x] === 1 || map[y][x] === 2)) {
+                        map[y][x] = 504;
+                        window.goldmineSpawned = {x, y};
+                        placed = true;
+                        if (typeof drawMap === 'function') drawMap();
+                        break;
+                    }
+                }
+                if (placed) break;
+            }
+        }
     }
 
     function showFarmModal() {
