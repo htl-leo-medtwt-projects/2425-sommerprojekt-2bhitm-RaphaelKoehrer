@@ -741,4 +741,46 @@
     }
     // Beim Laden anzeigen
     showMissionDisplay();
+
+    // Admin-Button unten rechts
+    const adminBtn = document.createElement('button');
+    adminBtn.textContent = 'Admin';
+    adminBtn.id = 'adminBtn';
+    adminBtn.style.position = 'fixed';
+    adminBtn.style.right = '32px';
+    adminBtn.style.bottom = '32px';
+    adminBtn.style.zIndex = '10000';
+    adminBtn.style.background = '#222';
+    adminBtn.style.color = 'white';
+    adminBtn.style.fontSize = '1.3rem';
+    adminBtn.style.padding = '12px 28px';
+    adminBtn.style.borderRadius = '12px';
+    adminBtn.style.border = 'none';
+    adminBtn.style.cursor = 'pointer';
+    adminBtn.style.boxShadow = '0 2px 8px rgba(0,0,0,0.2)';
+    adminBtn.style.display = 'none'; // Erst unsichtbar
+    let adminActive = false;
+    document.body.appendChild(adminBtn);
+    adminBtn.addEventListener('click', function() {
+        adminActive = !adminActive;
+        if (adminActive) {
+            adminBtn.style.background = 'green';
+            window.wood = 25000;
+            window.gold = 25000;
+        } else {
+            adminBtn.style.background = '#222';
+            window.wood = 250;
+            window.gold = 1000;
+        }
+        if (typeof updateResourceBar === 'function') updateResourceBar();
+    });
+    // Zeige Button nach Spielstart
+    if (!window.showAdminBtnAfterStart) {
+        window.showAdminBtnAfterStart = true;
+        const origStartGame = window.StartGame;
+        window.StartGame = function() {
+            if (typeof origStartGame === 'function') origStartGame.apply(this, arguments);
+            adminBtn.style.display = 'block';
+        };
+    }
 })();
