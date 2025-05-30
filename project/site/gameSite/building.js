@@ -562,6 +562,18 @@
             if (shakeActive) setTimeout(doShake, 30);
         }
         doShake();
+        // Sound abspielen
+        let altarAudio = document.getElementById('altarDistortedAudio');
+        if (!altarAudio) {
+            altarAudio = document.createElement('audio');
+            altarAudio.id = 'altarDistortedAudio';
+            altarAudio.src = '../sounds/distorted.m4a';
+            altarAudio.loop = true;
+            altarAudio.volume = 1;
+            document.body.appendChild(altarAudio);
+        }
+        altarAudio.currentTime = 0;
+        altarAudio.play();
         // Horror-Zeichen animieren
         let horrorContainer = document.getElementById('altarHorrorContainer');
         if (!horrorContainer) {
@@ -617,6 +629,11 @@
             shakeActive = false;
             body.style.transform = '';
             altarOverlay.style.display = 'none';
+            if (altarAudio) {
+                altarAudio.pause();
+                altarAudio.currentTime = 0;
+                altarAudio.remove();
+            }
         }, 3500);
     }
 
