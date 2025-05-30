@@ -14,7 +14,8 @@
         { src: './img/build/Farm_Orc.png', alt: 'Farm', name: 'Farm', wood: 400, gold: 400 },
         { src: './img/build/Tower.png', alt: 'Tower', name: 'Tower', wood: 0, gold: 1000, requires: { farm: 1, bridge: 1 } },
         { src: './img/build/Lumbermill.png', alt: 'Lumbermill', name: 'Lumbermill', wood: 600, gold: 200, requires: { farm: 1, tower: 1 } },
-        { src: './img/build/Refinery.png', alt: 'Refinery', name: 'Refinery', wood: 0, gold: 800, requires: { farm: 3, lumbermill: 1 } }
+        { src: './img/build/Refinery.png', alt: 'Refinery', name: 'Refinery', wood: 0, gold: 800, requires: { farm: 3, lumbermill: 1 } },
+        { src: './img/build/Altar.png', alt: 'Altar', name: 'Altar', wood: 1500, gold: 1500 }
     ];
 
     // Hilfsfunktion für Bau-Meldungen wie beim Baumfällen
@@ -448,6 +449,177 @@
         }
     }
 
+    function showAltarModal() {
+        let modal = document.getElementById('bridgeModal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'bridgeModal';
+            modal.style.display = 'none';
+            document.body.appendChild(modal);
+        }
+        const altar = buildings.find(b => b.alt === 'Altar');
+        modal.innerHTML = `
+            <div class="bridge-modal-content">
+                <p style="font-size:2rem;">Willst du einen Altar bauen?</p>
+                <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 18px;">
+                    <span style='font-size:2rem; color:gold; margin-bottom: 6px;'>${altar.gold} Gold</span>
+                    <span style='font-size:2rem; color:green;'>${altar.wood} Holz</span>
+                </div>
+                <button id="altarYesBtn">Ja</button>
+                <button id="altarNoBtn">Nein</button>
+            </div>
+        `;
+        modal.style.display = 'flex';
+        document.getElementById('altarYesBtn').onclick = () => {
+            placeAltarRandomly();
+            modal.style.display = 'none';
+        };
+        document.getElementById('altarNoBtn').onclick = () => {
+            modal.style.display = 'none';
+        };
+    }
+
+    function placeAltarRandomly() {
+        const altar = buildings.find(b => b.alt === 'Altar');
+        if (!altar) return;
+        if (window.wood < altar.wood || window.gold < altar.gold) {
+            showBuildMessage(`Altar kostet ${altar.gold} Gold und ${altar.wood} Holz`);
+            return;
+        }
+        if (!window.map) return;
+        const map = window.map;
+        const possibleSpots = [];
+        for (let y = 0; y < map.length; y++) {
+            for (let x = 0; x < map[0].length; x++) {
+                if (map[y][x] === 1 || map[y][x] === 2) {
+                    possibleSpots.push({x, y});
+                }
+            }
+        }
+        if (possibleSpots.length === 0) {
+            showBuildMessage('Kein Platz für Altar gefunden!');
+            return;
+        }
+        const spot = possibleSpots[Math.floor(Math.random() * possibleSpots.length)];
+        map[spot.y][spot.x] = 505;
+        window.wood -= altar.wood;
+        window.gold -= altar.gold;
+        if (typeof window.missionProgress !== 'undefined') {
+            window.missionProgress.altar = (window.missionProgress.altar || 0) + 1;
+        }
+        if (typeof window.buildings !== 'undefined') { window.buildings++; }
+        if (typeof updateResourceBar === 'function') updateResourceBar();
+        if (typeof drawMap === 'function') drawMap();
+        if (document.getElementById('buildingValue')) {
+            document.getElementById('buildingValue').textContent = window.buildings;
+        }
+        if (typeof window.buildings !== 'undefined' && typeof window.buildingGoal !== 'undefined' && window.buildings == window.buildingGoal) {
+            if (typeof showYouWonScreen === 'function') showYouWonScreen();
+        }
+        // Altar-Effekt: Alle Wasser-Tiles (ID 5, 8, 9, 100, 101) werden zu 1 oder 2
+        for (let y = 0; y < map.length; y++) {
+            for (let x = 0; x < map[0].length; x++) {
+                if ([5,8,9,100,101].includes(map[y][x])) {
+                    map[y][x] = Math.random() < 0.5 ? 1 : 2;
+                }
+            }
+        }
+        if (typeof drawMap === 'function') drawMap();
+        showAltarOverlay();
+    }
+
+    function showAltarOverlay() {
+        // Rotes Overlay erzeugen
+        let altarOverlay = document.getElementById('altarRedOverlay');
+        if (!altarOverlay) {
+            altarOverlay = document.createElement('div');
+            altarOverlay.id = 'altarRedOverlay';
+            altarOverlay.style.position = 'fixed';
+            altarOverlay.style.top = '0';
+            altarOverlay.style.left = '0';
+            altarOverlay.style.width = '100vw';
+            altarOverlay.style.height = '100vh';
+            altarOverlay.style.background = 'rgba(180,0,0,0.55)';
+            altarOverlay.style.zIndex = '999998';
+            altarOverlay.style.pointerEvents = 'none';
+            altarOverlay.style.transition = 'none';
+            document.body.appendChild(altarOverlay);
+        }
+        altarOverlay.style.display = 'block';
+        // Shake und Verzerrung auf body
+        const body = document.body;
+        let shakeFrame = 0;
+        let shakeActive = true;
+        function doShake() {
+            if (!shakeActive) return;
+            const x = Math.random() * 32 - 16;
+            const y = Math.random() * 32 - 16;
+            const r = Math.random() * 10 - 5;
+            const sx = 1 + (Math.random() * 0.08 - 0.04);
+            const sy = 1 + (Math.random() * 0.08 - 0.04);
+            body.style.transform = `translate(${x}px,${y}px) rotate(${r}deg) scale(${sx},${sy}) skew(${Math.random()*8-4}deg,${Math.random()*8-4}deg)`;
+            shakeFrame++;
+            if (shakeActive) setTimeout(doShake, 30);
+        }
+        doShake();
+        // Horror-Zeichen animieren
+        let horrorContainer = document.getElementById('altarHorrorContainer');
+        if (!horrorContainer) {
+            horrorContainer = document.createElement('div');
+            horrorContainer.id = 'altarHorrorContainer';
+            horrorContainer.style.position = 'fixed';
+            horrorContainer.style.top = '0';
+            horrorContainer.style.left = '0';
+            horrorContainer.style.width = '100vw';
+            horrorContainer.style.height = '100vh';
+            horrorContainer.style.pointerEvents = 'none';
+            horrorContainer.style.zIndex = '999999';
+            document.body.appendChild(horrorContainer);
+        }
+        horrorContainer.innerHTML = '';
+        let running = true;
+        function spawnHorrorSymbol() {
+            if (!running) return;
+            const chars = '0123456789#@!$%&*?ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const el = document.createElement('div');
+            el.textContent = chars[Math.floor(Math.random()*chars.length)];
+            el.style.position = 'fixed';
+            el.style.left = Math.random()*100 + 'vw';
+            el.style.top = '-40px';
+            el.style.fontSize = (Math.random()*2+2) + 'rem';
+            el.style.color = '#fff';
+            el.style.fontWeight = 'bold';
+            el.style.textShadow = '2px 2px 8px #000, 0 0 16px #fff';
+            el.style.pointerEvents = 'none';
+            el.style.zIndex = '999999';
+            el.style.transform = `rotate(${Math.random()*40-20}deg) skew(${Math.random()*30-15}deg,${Math.random()*30-15}deg)`;
+            horrorContainer.appendChild(el);
+            // Animieren
+            const duration = 1200 + Math.random()*800;
+            el.animate([
+                { top: '-40px', opacity: 1 },
+                { top: '100vh', opacity: 0.2 }
+            ], {
+                duration: duration,
+                easing: 'cubic-bezier(.5,0,.5,1)'
+            });
+            setTimeout(() => { el.remove(); }, duration+100);
+        }
+        // Viele Symbole schnell spawnen
+        let horrorInterval = setInterval(() => {
+            for (let i=0; i<4; i++) spawnHorrorSymbol();
+        }, 80);
+        // Nach 3.5s alles entfernen
+        setTimeout(() => {
+            running = false;
+            clearInterval(horrorInterval);
+            horrorContainer.innerHTML = '';
+            shakeActive = false;
+            body.style.transform = '';
+            altarOverlay.style.display = 'none';
+        }, 3500);
+    }
+
     // Entferne alle Reste von Upgrade-Menü und stelle das Build-Menü sicher wieder her
     // Stelle sicher, dass buildSection nur den Hammer enthält
     buildSection.innerHTML = '<img src="./img/hammer.png" alt="Build Icon" id="buildIcon" style="cursor:pointer;">';
@@ -482,6 +654,8 @@
                 img.addEventListener('click', () => { showLumbermillModal(); });
             } else if (building.alt === 'Refinery') {
                 img.addEventListener('click', () => { showRefineryModal(); });
+            } else if (building.alt === 'Altar') {
+                img.addEventListener('click', () => { showAltarModal(); });
             }
         });
         const backArrow = document.createElement('img');
