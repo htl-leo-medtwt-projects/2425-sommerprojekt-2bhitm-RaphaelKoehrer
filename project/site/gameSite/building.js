@@ -516,10 +516,10 @@
         if (typeof window.buildings !== 'undefined' && typeof window.buildingGoal !== 'undefined' && window.buildings == window.buildingGoal) {
             if (typeof showYouWonScreen === 'function') showYouWonScreen();
         }
-        // Altar-Effekt: Alle Wasser-Tiles (ID 5, 8, 9, 100, 101) werden zu 1 oder 2
+        // Altar-Effekt: Alle Wasser-Tiles (ID 5, 8, 9, 100, 101, 221, 222, 223) werden zu 1 oder 2
         for (let y = 0; y < map.length; y++) {
             for (let x = 0; x < map[0].length; x++) {
-                if ([5,8,9,100,101].includes(map[y][x])) {
+                if ([5,8,9,100,101,221,222,223].includes(map[y][x])) {
                     map[y][x] = Math.random() < 0.5 ? 1 : 2;
                 }
             }
