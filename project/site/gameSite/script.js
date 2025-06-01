@@ -129,6 +129,7 @@ function StartGame() {
             503: 'img/Refinery.png',
             504: 'img/Goldmine.png',
             505: 'img/Altar.png',
+            506: 'img/Dragonroost.png',
             999: 'img/mine.png',
             1000: './img/build/bridge.png',
         };
@@ -186,6 +187,7 @@ function StartGame() {
                 503: 'img/winter/Refinery/Refinery.png',
                 504: 'img/winter/Goldmine/Goldmine.png',
                 505: 'img/winter/Altar/Altar.png',
+                506: 'img/winter/Dragonroost/Dragonroost.png',
                 999: 'img/mine_winter.png',
                 1000: './img/build/bridge.png',
         };
@@ -244,6 +246,7 @@ function StartGame() {
                 503: 'img/swamp/Refinery/Refinery.png',
                 504: 'img/swamp/Goldmine/Goldmine.png',
                 505: 'img/swamp/Altar/Altar.png',
+                506: 'img/swamp/Dragonroost/Dragonroost.png',
                 999: 'img/mine.png',
                 1000: './img/build/bridge.png',
         };
@@ -301,6 +304,7 @@ function StartGame() {
             503: 'img/Refinery.png',
             504: 'img/Goldmine.png',
             505: 'img/Altar.png',
+            506: 'img/Dragonroost.png',
             999: 'img/mine.png',
             1000: './img/build/bridge.png',
         };

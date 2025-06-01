@@ -9,14 +9,49 @@
         window.power = 1;
     }
 
+    // Neue, gebalancte Preise für Buildings
     const buildings = [
-        { src: './img/build/bridge.png', alt: 'Bridge', name: 'Bridge', wood: 800, gold: 250 },
-        { src: './img/build/Farm_Orc.png', alt: 'Farm', name: 'Farm', wood: 400, gold: 400 },
-        { src: './img/build/Tower.png', alt: 'Tower', name: 'Tower', wood: 0, gold: 1000, requires: { farm: 1, bridge: 1 } },
-        { src: './img/build/Lumbermill.png', alt: 'Lumbermill', name: 'Lumbermill', wood: 600, gold: 200, requires: { farm: 1, tower: 1 } },
-        { src: './img/build/Refinery.png', alt: 'Refinery', name: 'Refinery', wood: 0, gold: 800, requires: { farm: 3, lumbermill: 1 } },
-        { src: './img/build/Altar.png', alt: 'Altar', name: 'Altar', wood: 1500, gold: 1500 }
+        { src: './img/build/bridge.png', alt: 'Bridge', name: 'Bridge', wood: 600, gold: 200 },
+        { src: './img/build/Farm_Orc.png', alt: 'Farm', name: 'Farm', wood: 250, gold: 200 },
+        { src: './img/build/Tower.png', alt: 'Tower', name: 'Tower', wood: 200, gold: 600, requires: { farm: 1, bridge: 1 } },
+        { src: './img/build/Lumbermill.png', alt: 'Lumbermill', name: 'Lumbermill', wood: 400, gold: 150, requires: { farm: 1, tower: 1 } },
+        { src: './img/build/Refinery.png', alt: 'Refinery', name: 'Refinery', wood: 0, gold: 600, requires: { farm: 3, lumbermill: 1 } },
+        { src: './img/build/Altar.png', alt: 'Altar', name: 'Altar', wood: 1000, gold: 1000 },
+        { src: './img/build/Dragonroost.png', alt: 'Dragonroost', name: 'Dragonroost', wood: 1200, gold: 2000 }
     ];
+
+    // Missionsziele als Objekt für dynamische Prüfung
+    const missionGoals = {
+        mission1: {
+            farm: 3,
+            bridge: 2,
+            tower: 1,
+            lumbermill: 1,
+            refinery: 1,
+            altar: 1,
+            dragonroost: 1
+        },
+        mission2: {
+            farm: 5,
+            bridge: 2,
+            tower: 2,
+            lumbermill: 2,
+            refinery: 2,
+            altar: 1,
+            dragonroost: 1
+        }
+    };
+
+    // Initialisiere missionProgress mit allen Keys auf 0 beim Laden
+    if (!window.missionProgress || typeof window.missionProgress !== 'object') {
+        window.missionProgress = {};
+    }
+    // Alle Keys aus allen Missionszielen auf 0 setzen, falls nicht vorhanden
+    Object.values(missionGoals).forEach(goal => {
+        Object.keys(goal).forEach(key => {
+            if (typeof window.missionProgress[key] !== 'number') window.missionProgress[key] = 0;
+        });
+    });
 
     // Hilfsfunktion für Bau-Meldungen wie beim Baumfällen
     function showBuildMessage(message) {
@@ -108,7 +143,6 @@
         map[spot.y][spot.x+1] = 223;
         window.wood -= bridge.wood;
         window.gold -= bridge.gold;
-        // missionProgress initialisieren, falls nicht vorhanden
         if (typeof window.missionProgress === 'undefined' || !window.missionProgress) {
             window.missionProgress = {};
         }
@@ -116,16 +150,12 @@
         if (typeof window.buildings !== 'undefined') { window.buildings++; }
         if (typeof updateResourceBar === 'function') updateResourceBar();
         if (typeof drawMap === 'function') drawMap();
-        // Ressourcenanzeige updaten
         if (document.getElementById('buildingValue')) {
             document.getElementById('buildingValue').textContent = window.buildings;
         }
-        if (typeof window.buildings !== 'undefined' && typeof window.buildingGoal !== 'undefined' && window.buildings == window.buildingGoal) {
-            if (typeof showYouWonScreen === 'function') showYouWonScreen();
-        }
-        // Goldmine nach Brückenbau spawnen
+        checkMissionWin();
+        // Goldmine nach Brückenbau spawnen (nur einmal)
         if (!window.goldmineSpawned) {
-            // Suche rechts vom Fluss (x > 10) ein Tile 1 oder 2
             let placed = false;
             for (let y = 0; y < map.length; y++) {
                 for (let x = Math.floor(map[0].length/2)+1; x < map[0].length; x++) {
@@ -138,6 +168,39 @@
                     }
                 }
                 if (placed) break;
+            }
+        }
+        // Rechtsklick-Event für Goldmine setzen
+        setTimeout(() => {
+            if (typeof window.attachGoldmineRightClick === 'function') window.attachGoldmineRightClick();
+        }, 100);
+    }
+
+    // Rechtsklick auf Goldmine: FoundMessage und Goldminen-Intervall
+    window.attachGoldmineRightClick = function() {
+        if (!window.map) return;
+        const map = window.map;
+        for (let y = 0; y < map.length; y++) {
+            for (let x = 0; x < map[0].length; x++) {
+                if (map[y][x] === 504) {
+                    const goldmineTile = document.querySelector(`[data-x='${x}'][data-y='${y}']`);
+                    if (goldmineTile) {
+                        goldmineTile.oncontextmenu = function(e) {
+                            e.preventDefault();
+                            if (!window.goldmineActive) {
+                                if (typeof showBuildMessage === 'function') showBuildMessage('Du hast eine Goldmine gefunden!');
+                                window.goldmineActive = true;
+                                if (window.goldmineInterval) clearInterval(window.goldmineInterval);
+                                window.goldmineInterval = setInterval(() => {
+                                    window.gold += 500;
+                                    if (typeof updateResourceBar === 'function') updateResourceBar();
+                                }, 60000);
+                            } else {
+                                if (typeof showBuildMessage === 'function') showBuildMessage('Goldmine ist bereits aktiv!');
+                            }
+                        };
+                    }
+                }
             }
         }
     }
@@ -209,9 +272,7 @@
         if (document.getElementById('buildingValue')) {
             document.getElementById('buildingValue').textContent = window.buildings;
         }
-        if (typeof window.buildings !== 'undefined' && typeof window.buildingGoal !== 'undefined' && window.buildings == window.buildingGoal) {
-            if (typeof showYouWonScreen === 'function') showYouWonScreen();
-        }
+        checkMissionWin();
     }
 
     function showTowerModal() {
@@ -290,9 +351,7 @@
         if (document.getElementById('buildingValue')) {
             document.getElementById('buildingValue').textContent = window.buildings;
         }
-        if (typeof window.buildings !== 'undefined' && typeof window.buildingGoal !== 'undefined' && window.buildings == window.buildingGoal) {
-            if (typeof showYouWonScreen === 'function') showYouWonScreen();
-        }
+        checkMissionWin();
     }
 
     function showLumbermillModal() {
@@ -366,9 +425,7 @@
         if (document.getElementById('buildingValue')) {
             document.getElementById('buildingValue').textContent = window.buildings;
         }
-        if (typeof window.buildings !== 'undefined' && typeof window.buildingGoal !== 'undefined' && window.buildings == window.buildingGoal) {
-            if (typeof showYouWonScreen === 'function') showYouWonScreen();
-        }
+        checkMissionWin();
     }
 
     function showRefineryModal() {
@@ -444,9 +501,7 @@
         if (document.getElementById('buildingValue')) {
             document.getElementById('buildingValue').textContent = window.buildings;
         }
-        if (typeof window.buildings !== 'undefined' && typeof window.buildingGoal !== 'undefined' && window.buildings == window.buildingGoal) {
-            if (typeof showYouWonScreen === 'function') showYouWonScreen();
-        }
+        checkMissionWin();
     }
 
     function showAltarModal() {
@@ -513,9 +568,7 @@
         if (document.getElementById('buildingValue')) {
             document.getElementById('buildingValue').textContent = window.buildings;
         }
-        if (typeof window.buildings !== 'undefined' && typeof window.buildingGoal !== 'undefined' && window.buildings == window.buildingGoal) {
-            if (typeof showYouWonScreen === 'function') showYouWonScreen();
-        }
+        checkMissionWin();
         // Altar-Effekt: Alle Wasser-Tiles (ID 5, 8, 9, 100, 101, 221, 222, 223) werden zu 1 oder 2
         for (let y = 0; y < map.length; y++) {
             for (let x = 0; x < map[0].length; x++) {
@@ -637,6 +690,86 @@
         }, 3500);
     }
 
+    function showDragonroostModal() {
+        let modal = document.getElementById('bridgeModal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'bridgeModal';
+            modal.style.display = 'none';
+            document.body.appendChild(modal);
+        }
+        const dragonroost = buildings.find(b => b.alt === 'Dragonroost');
+        modal.innerHTML = `
+            <div class="bridge-modal-content">
+                <p style="font-size:2rem;">Willst du ein Dragonroost bauen?</p>
+                <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 18px;">
+                    <span style='font-size:2rem; color:gold; margin-bottom: 6px;'>${dragonroost.gold} Gold</span>
+                    <span style='font-size:2rem; color:green;'>${dragonroost.wood} Holz</span>
+                </div>
+                <button id="dragonroostYesBtn">Ja</button>
+                <button id="dragonroostNoBtn">Nein</button>
+            </div>
+        `;
+        modal.style.display = 'flex';
+        document.getElementById('dragonroostYesBtn').onclick = () => {
+            placeDragonroostRandomly();
+            modal.style.display = 'none';
+        };
+        document.getElementById('dragonroostNoBtn').onclick = () => {
+            modal.style.display = 'none';
+        };
+    }
+
+    function placeDragonroostRandomly() {
+        const dragonroost = buildings.find(b => b.alt === 'Dragonroost');
+        if (!dragonroost) return;
+        if (window.wood < dragonroost.wood || window.gold < dragonroost.gold) {
+            showBuildMessage(`Dragonroost kostet ${dragonroost.gold} Gold und ${dragonroost.wood} Holz`);
+            return;
+        }
+        if (!window.map) return;
+        const map = window.map;
+        const possibleSpots = [];
+        for (let y = 0; y < map.length; y++) {
+            for (let x = 0; x < map[0].length; x++) {
+                if (map[y][x] === 1 || map[y][x] === 2) {
+                    possibleSpots.push({x, y});
+                }
+            }
+        }
+        if (possibleSpots.length === 0) {
+            showBuildMessage('Kein Platz für Dragonroost gefunden!');
+            return;
+        }
+        const spot = possibleSpots[Math.floor(Math.random() * possibleSpots.length)];
+        map[spot.y][spot.x] = 506;
+        window.wood -= dragonroost.wood;
+        window.gold -= dragonroost.gold;
+        if (typeof window.missionProgress !== 'undefined') {
+            window.missionProgress.dragonroost = (window.missionProgress.dragonroost || 0) + 1;
+        }
+        if (typeof window.buildings !== 'undefined') { window.buildings++; }
+        if (typeof updateResourceBar === 'function') updateResourceBar();
+        if (typeof drawMap === 'function') drawMap();
+        if (document.getElementById('buildingValue')) {
+            document.getElementById('buildingValue').textContent = window.buildings;
+        }
+        checkMissionWin();
+        // Dragonroost-Effekt: 30% mehr Gold aus der Goldmine
+        window.dragonroostActive = true;
+    }
+
+    // Goldmine-Interval-Logik anpassen (z.B. in StartGame oder global)
+    // Beispiel: Wenn dragonroostActive, dann +30% Gold
+    if (!window.goldmineInterval) {
+        window.goldmineInterval = setInterval(() => {
+            let goldAmount = 500;
+            if (window.dragonroostActive) goldAmount = Math.floor(goldAmount * 1.3);
+            window.gold += goldAmount;
+            if (typeof updateResourceBar === 'function') updateResourceBar();
+        }, 60000);
+    }
+
     // Entferne alle Reste von Upgrade-Menü und stelle das Build-Menü sicher wieder her
     // Stelle sicher, dass buildSection nur den Hammer enthält
     buildSection.innerHTML = '<img src="./img/hammer.png" alt="Build Icon" id="buildIcon" style="cursor:pointer;">';
@@ -673,6 +806,8 @@
                 img.addEventListener('click', () => { showRefineryModal(); });
             } else if (building.alt === 'Altar') {
                 img.addEventListener('click', () => { showAltarModal(); });
+            } else if (building.alt === 'Dragonroost') {
+                img.addEventListener('click', () => { showDragonroostModal(); });
             }
         });
         const backArrow = document.createElement('img');
@@ -722,17 +857,27 @@
             });
             window.params = params;
         }
-        if (params.mission === 'none') {
-            missionText = '<b>No Mission</b>';
+        if (params.mission === 'none' || !params.mission) {
+            missionText = '<b>Kein Missionsziel</b><br>Baue beliebig viele Gebäude!';
         } else if (params.mission === 'mission1') {
             missionText = '<b>Mission 1</b><ul style="margin-top:8px;">'
                 + '<li id="missionFarm">Baue 3 Farmen</li>'
                 + '<li id="missionBridge">Baue 2 Brücken</li>'
+                + '<li id="missionTower">Baue 1 Tower</li>'
+                + '<li id="missionLumbermill">Baue 1 Lumbermill</li>'
+                + '<li id="missionRefinery">Baue 1 Refinery</li>'
+                + '<li id="missionAltar">Baue 1 Altar</li>'
+                + '<li id="missionDragonroost">Baue 1 Dragonroost</li>'
                 + '</ul>';
         } else if (params.mission === 'mission2') {
             missionText = '<b>Mission 2</b><ul style="margin-top:8px;">'
                 + '<li id="missionFarm">Baue 5 Farmen</li>'
-                + '<li id="missionBridge">Baue 1 Brücke</li>'
+                + '<li id="missionBridge">Baue 2 Brücken</li>'
+                + '<li id="missionTower">Baue 2 Tower</li>'
+                + '<li id="missionLumbermill">Baue 2 Lumbermills</li>'
+                + '<li id="missionRefinery">Baue 2 Refineries</li>'
+                + '<li id="missionAltar">Baue 1 Altar</li>'
+                + '<li id="missionDragonroost">Baue 1 Dragonroost</li>'
                 + '</ul>';
         } else {
             missionText = '';
@@ -741,6 +886,40 @@
     }
     // Beim Laden anzeigen
     showMissionDisplay();
+
+    // Missionslogik: Prüfe Missionsziele und Sieg
+    function checkMissionWin() {
+        let params = window.params;
+        if (!params) {
+            params = {};
+            window.location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (_, key, value) {
+                params[key] = decodeURIComponent(value);
+            });
+            window.params = params;
+        }
+        if (window.missionWon) return; // Sieg nur einmal auslösen
+        const mp = window.missionProgress || {};
+        // Dynamische Missionsprüfung
+        if (params.mission && missionGoals[params.mission]) {
+            const goal = missionGoals[params.mission];
+            let allMet = true;
+            for (const key in goal) {
+                if ((mp[key] || 0) < goal[key]) {
+                    allMet = false;
+                    break;
+                }
+            }
+            if (allMet) {
+                window.missionWon = true;
+                if (typeof showYouWonScreen === 'function') showYouWonScreen();
+            }
+        } else {
+            if (typeof window.buildings !== 'undefined' && typeof window.buildingGoal !== 'undefined' && window.buildingGoal > 0 && window.buildings >= window.buildingGoal) {
+                window.missionWon = true;
+                if (typeof showYouWonScreen === 'function') showYouWonScreen();
+            }
+        }
+    }
 
     // Admin-Button unten rechts
     const adminBtn = document.createElement('button');
