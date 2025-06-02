@@ -568,8 +568,10 @@ function StartGame() {
 
     // Ressourcenbar-Update Funktion
     function updateResourceBar() {
-        document.getElementById('goldValue').textContent = gold;
-        document.getElementById('woodValue').textContent = wood;
+        // Adminmodus: Unendlichkeitszeichen groß und fett anzeigen
+        const isAdmin = typeof window.isAdminMode === 'function' && window.isAdminMode();
+        document.getElementById('goldValue').innerHTML = isAdmin ? '<span class="infinity-symbol">&infin;</span>' : gold;
+        document.getElementById('woodValue').innerHTML = isAdmin ? '<span class="infinity-symbol">&infin;</span>' : wood;
         document.getElementById('buildingValue').textContent = buildings;
         document.getElementById('buildingGoal').textContent = buildingGoal;
     }
