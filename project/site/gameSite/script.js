@@ -120,9 +120,9 @@ function StartGame() {
             41: 'img/Trees/tree2/tree2_2.png',
             42: 'img/Trees/tree2/tree2_3.png',
             43: 'img/Trees/tree2/tree2_4.png',
-            221: 'img/swamp/Bridge/BridgeLeft.png',
-            222: 'img/swamp/Bridge/BridgeMiddle.png',
-            223: 'img/swamp/Bridge/BridgeRight.png',
+            221: 'img/Default/Bridge/BridgeLeft.png',
+            222: 'img/Default/Bridge/BridgeMiddle.png',
+            223: 'img/Default/Bridge/BridgeRight.png',
             500: 'img/Farm.png',
             501: 'img/Tower.png',
             502: 'img/Lumbermill.png',
@@ -359,7 +359,7 @@ function StartGame() {
         if (origUpdateResourceBar) origUpdateResourceBar();
         if (!bridgeBuilt && window.missionProgress && window.missionProgress.bridge > 0) {
             bridgeBuilt = true;
-            setHelpOverlay('Run to the Goldmine and press Right Click!');
+            setHelpOverlay('Run to the Goldmine and press Right Click / E!');
         }
     }
     // Goldmine finden überwachen
@@ -926,9 +926,13 @@ function StartGame() {
                 window.goldmineDiscovered = true;
                 showGoldmineMessage(tileX, tileY);
                 blinkGoldmineTile(tileX, tileY, 3000);
+                // HelpOverlay ausblenden, wenn Goldmine gefunden
+                if (helpOverlay) helpOverlay.style.display = 'none';
                 if (window.goldmineInterval) clearInterval(window.goldmineInterval);
                 window.goldmineInterval = setInterval(() => {
-                    gold += 500;
+                    let goldAmount = 500;
+                    if (window.dragonroostActive) goldAmount = Math.floor(goldAmount * 1.3);
+                    gold += goldAmount;
                     window.gold = gold;
                     if (typeof updateResourceBar === 'function') updateResourceBar();
                 }, 60000);
@@ -1190,6 +1194,28 @@ function StartGame() {
         }
     });
 
+    // Goldmine mit Taste E freischalten (wenn Spieler auf Goldmine steht)
+    document.addEventListener('keydown', (e) => {
+        if (e.key.toLowerCase() === 'e') {
+            // Prüfe ob Spieler auf einer Goldmine steht
+            if (!window.goldmineDiscovered && map[player.y]?.[player.x] === 504) {
+                window.goldmineDiscovered = true;
+                showGoldmineMessage(player.x, player.y);
+                blinkGoldmineTile(player.x, player.y, 3000);
+                // HelpOverlay ausblenden, wenn Goldmine gefunden
+                if (helpOverlay) helpOverlay.style.display = 'none';
+                if (window.goldmineInterval) clearInterval(window.goldmineInterval);
+                window.goldmineInterval = setInterval(() => {
+                    let goldAmount = 500;
+                    if (window.dragonroostActive) goldAmount = Math.floor(goldAmount * 1.3);
+                    gold += goldAmount;
+                    window.gold = gold;
+                    if (typeof updateResourceBar === 'function') updateResourceBar();
+                }, 60000);
+            }
+        }
+    });
+
     // Initiales Map-Rendering nach DOMContentLoaded
     document.addEventListener('DOMContentLoaded', () => {
         let playerElement = document.getElementById('character');
@@ -1316,6 +1342,8 @@ document.addEventListener('DOMContentLoaded', () => {
             upgradeMenu.style.display = 'none';
         });
     }
+
+
 
     document.addEventListener('keydown', (e) => {
         if (e.key.toLowerCase() === 'm' && menuScreen) {

@@ -24,7 +24,6 @@
     const missionGoals = {
         mission1: {
             farm: 3,
-            bridge: 2,
             tower: 1,
             lumbermill: 1,
             refinery: 1,
@@ -33,7 +32,6 @@
         },
         mission2: {
             farm: 5,
-            bridge: 2,
             tower: 2,
             lumbermill: 2,
             refinery: 2,
@@ -759,17 +757,6 @@
         window.dragonroostActive = true;
     }
 
-    // Goldmine-Interval-Logik anpassen (z.B. in StartGame oder global)
-    // Beispiel: Wenn dragonroostActive, dann +30% Gold
-    if (!window.goldmineInterval) {
-        window.goldmineInterval = setInterval(() => {
-            let goldAmount = 500;
-            if (window.dragonroostActive) goldAmount = Math.floor(goldAmount * 1.3);
-            window.gold += goldAmount;
-            if (typeof updateResourceBar === 'function') updateResourceBar();
-        }, 60000);
-    }
-
     // Entferne alle Reste von Upgrade-Menü und stelle das Build-Menü sicher wieder her
     // Stelle sicher, dass buildSection nur den Hammer enthält
     buildSection.innerHTML = '<img src="./img/hammer.png" alt="Build Icon" id="buildIcon" style="cursor:pointer;">';
@@ -862,7 +849,6 @@
         } else if (params.mission === 'mission1') {
             missionText = '<b>Mission 1</b><ul style="margin-top:8px;">'
                 + '<li id="missionFarm">Baue 3 Farmen</li>'
-                + '<li id="missionBridge">Baue 2 Brücken</li>'
                 + '<li id="missionTower">Baue 1 Tower</li>'
                 + '<li id="missionLumbermill">Baue 1 Lumbermill</li>'
                 + '<li id="missionRefinery">Baue 1 Refinery</li>'
@@ -872,7 +858,6 @@
         } else if (params.mission === 'mission2') {
             missionText = '<b>Mission 2</b><ul style="margin-top:8px;">'
                 + '<li id="missionFarm">Baue 5 Farmen</li>'
-                + '<li id="missionBridge">Baue 2 Brücken</li>'
                 + '<li id="missionTower">Baue 2 Tower</li>'
                 + '<li id="missionLumbermill">Baue 2 Lumbermills</li>'
                 + '<li id="missionRefinery">Baue 2 Refineries</li>'
