@@ -32,6 +32,7 @@ let selectedResource = null;
 let selectedGoal = null;
 let selectedTimeLimit = null;
 let selectedMission = null;
+let selectedControl = 'wasd'; // Default
 
 function selectMap(map) {
     selectedMap = map;
@@ -68,6 +69,11 @@ function selectTimeLimit(timeLimit) {
 function selectMission(mission) {
     selectedMission = mission;
     console.log(`Selected Mission: ${mission}`);
+}
+
+function selectControl(control) {
+    selectedControl = control;
+    console.log(`Selected Control: ${control}`);
 }
 
 function confirmSelection() {
@@ -108,7 +114,8 @@ function confirmSelection() {
                 resource: selectedResource,
                 goal: selectedGoal,
                 timeLimit: selectedTimeLimit,
-                mission: selectedMission
+                mission: selectedMission,
+                control: selectedControl
             });
             window.location.href = `../gameSite/index.html?${params.toString()}`;
         }, 500); 

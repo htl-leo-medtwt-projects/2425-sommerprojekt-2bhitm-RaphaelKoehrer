@@ -45,38 +45,6 @@ body {
     z-index: 100;
 }
 
-#leaderBoardDiv {
-    position: absolute;
-    top: 50%;
-    width: fit-content;
-    right: 3vw;
-    transition: all 0.25s ease;
-}
-
-#leaderBoardDiv:hover {
-    transform: scale(1.1);
-}
-
-#leaderBoardDiv img {
-    width: 90px;
-}
-
-#settingsDiv {
-    position: absolute;
-    top: 50%;
-    width: fit-content;
-    left: 3vw;
-    transition: all 0.25s ease;
-}
-
-#settingsDiv img {
-    width: 90px;
-}
-
-#settingsDiv:hover {
-    transform: rotate(50deg);
-}
-
 #ButtonWrapper p , #tutorial p{
    display: block;
    width: fit-content;

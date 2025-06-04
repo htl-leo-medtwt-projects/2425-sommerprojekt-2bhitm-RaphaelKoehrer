@@ -46,41 +46,6 @@
         </div>
     </div>
 
-    <div id="settingsDiv" onclick="showSettings()">
-        <img src="./img/settings.png" alt="settings">
-    </div>
-
-    <div id="leaderBoardDiv" onclick="showLeaderboard()">
-        <img src="./img/leaderboard.png" alt="leaderboard">
-    </div>
-
-    <div id="leaderboard">
-        <div id="leaderboardClose">
-            <img src="./img/button.png" alt="img" onclick="closeLeaderboard()">
-            <p onclick="closeLeaderboard()">Return</p>
-        </div>
-        <div id="leaderboardContent">
-            <p>Leaderboard folgt...</p>
-        </div>
-    </div>
-    
-    <div id="settings">
-        <div id="settingsCloseBtn">
-            <img src="./img/button.png" alt="img" onclick="closeSettings()">
-            <p onclick="closeSettings()">Return</p>
-        </div>
-        <div id="settingsContent">
-            <p>Einstellungen folgen...</p>
-            <div class="settings-option">
-                <label for="controlSelect">Bewegung:</label>
-                <select id="controlSelect" onchange="saveControlPreference()">
-                    <option value="click" selected>Mausklick</option>
-                    <option value="wasd">WASD</option>
-                </select>
-            </div>
-        </div>
-    </div>
-
     <div id="audioSetter" onclick="changeAudio()">
         <img src="../sounds/mutedImg.png" alt="audioImg" id="audioImg">
     </div>

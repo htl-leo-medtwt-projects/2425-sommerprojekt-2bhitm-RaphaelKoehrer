@@ -940,11 +940,6 @@
         if (e.altKey && (e.key === 'a' || e.key === 'A')) {
             setAdminMode(!adminActive);
         }
-        // ALT + G = Sofortiger Sieg
-        if (e.altKey && (e.key === 'g' || e.key === 'G')) {
-            if (typeof showYouWonScreen === 'function') showYouWonScreen();
-            window.missionWon = true;
-        }
     });
 
     // Entferne den Admin-Button-Code komplett
