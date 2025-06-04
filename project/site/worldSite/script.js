@@ -16,7 +16,7 @@ function getQueryParams() {
 window.onload = function () {
     getQueryParams();
 
-    selectedResource = document.getElementById('resource').value;
+    selectedResource = "low"; // Immer "low" als Standard
     selectedGoal = document.getElementById('goal').value;
     selectedTimeLimit = document.getElementById('timeLimit').value;
     selectedMission = document.getElementById('missions').value;
@@ -28,7 +28,7 @@ window.onload = function () {
 };
 
 let selectedMap = null;
-let selectedResource = null;
+let selectedResource = "low"; // Immer "low"
 let selectedGoal = null;
 let selectedTimeLimit = null;
 let selectedMission = null;
@@ -49,11 +49,6 @@ function selectMap(map) {
             card.classList.add('dimmed'); 
         }
     });
-}
-
-function selectResource(resource) {
-    selectedResource = resource;
-    console.log(`Selected Resource: ${resource}`);
 }
 
 function selectGoal(goal) {
