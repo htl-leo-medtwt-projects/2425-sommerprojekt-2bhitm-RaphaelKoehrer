@@ -77,51 +77,34 @@ function selectControl(control) {
 }
 
 function confirmSelection() {
-    if (!selectedMap) {
-        alert("Bitte wähle eine Karte aus!");
-        return;
+    // Username und Team aus URL holen, Fallback auf leeren String falls nicht vorhanden
+    const urlParams = new URLSearchParams(window.location.search);
+    let username = urlParams.get('username');
+    let team = urlParams.get('team');
+
+    // Fallback: Versuche Username und Team aus localStorage zu holen, falls leer
+    if (!username) {
+        username = localStorage.getItem('username') || '';
     }
-    if (!selectedResource) {
-        alert("Bitte wähle eine Ressource aus!");
-        return;
-    }
-    if (!selectedGoal) {
-        alert("Bitte wähle ein Ziel aus!");
-        return;
-    }
-    if (!selectedTimeLimit) {
-        alert("Bitte wähle ein Zeitlimit aus!");
-        return;
-    }
-    if (!selectedMission) {
-        alert("Bitte wähle eine Mission aus!");
-        return;
+    if (!team) {
+        team = localStorage.getItem('team') || '';
     }
 
-    console.log(`Map: ${selectedMap}, Resource: ${selectedResource}, Goal: ${selectedGoal}, Time Limit: ${selectedTimeLimit}, Mission: ${selectedMission}`);
+    // Falls immer noch leer, versuche aus vorherigen Feldern (optional)
+    // (Hier ggf. weitere Logik, falls Username irgendwo im DOM steht)
 
-    const overlay = document.getElementById('transitionOverlay');
-    if (overlay) {
-        overlay.classList.remove('hidden');
-        overlay.classList.add('active'); 
+    const params = new URLSearchParams({
+        map: selectedMap,
+        resource: selectedResource,
+        goal: selectedGoal,
+        timeLimit: selectedTimeLimit,
+        mission: selectedMission,
+        control: selectedControl,
+        username: username,
+        team: team
+    });
 
-        setTimeout(() => {
-            const params = new URLSearchParams({
-                username: new URLSearchParams(window.location.search).get('username'),
-                team: new URLSearchParams(window.location.search).get('team'),
-                control: new URLSearchParams(window.location.search).get('control'),
-                map: selectedMap,
-                resource: selectedResource,
-                goal: selectedGoal,
-                timeLimit: selectedTimeLimit,
-                mission: selectedMission,
-                control: selectedControl
-            });
-            window.location.href = `../gameSite/index.html?${params.toString()}`;
-        }, 500); 
-    } else {
-        console.error("Overlay nicht gefunden");
-    }
+    window.location.href = `../gameSite/index.html?${params.toString()}`;
 }
 
 function fadeInPage() {

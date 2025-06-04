@@ -649,8 +649,9 @@ function StartGame() {
             ctx.strokeStyle = 'black';
             ctx.font = 'bold 14px sans-serif';
             ctx.lineWidth = 2;
-            ctx.strokeText(playerName, drawX + (window.humanFrameWidth * scale) / 2 - textWidth / 2, drawY - 10);
-            ctx.fillText(playerName, drawX + (window.humanFrameWidth * scale) / 2 - textWidth / 2, drawY - 10);
+                // Fix: use humanStandFrameWidth instead of humanFrameWidth
+            ctx.strokeText(playerName, drawX + (window.humanStandFrameWidth * scale) / 2 - textWidth / 2, drawY - 10);
+            ctx.fillText(playerName, drawX + (window.humanStandFrameWidth * scale) / 2 - textWidth / 2, drawY - 10);
         } else {
 
             if (!window.orcRunSprite) {
